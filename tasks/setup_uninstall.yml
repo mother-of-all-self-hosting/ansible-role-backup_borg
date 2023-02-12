@@ -1,0 +1,25 @@
+---
+
+- name: Check existence of placeholder-backup-borg service
+  ansible.builtin.stat:
+    path: "{{ devture_systemd_docker_base_systemd_path }}/placeholder-backup-borg.service"
+  register: placeholder_backup_borg_service_stat
+
+- when: placeholder_backup_borg_service_stat.stat.exists | bool
+  block:
+    - name: Ensure placeholder-backup-borg is stopped
+      ansible.builtin.service:
+        name: placeholder-backup-borg
+        state: stopped
+        enabled: false
+        daemon_reload: true
+
+    - name: Ensure placeholder-backup-borg.service doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/placeholder-backup-borg.service"
+        state: absent
+
+    - name: Ensure placeholder-backup-borg.timer doesn't exist
+      ansible.builtin.file:
+        path: "{{ devture_systemd_docker_base_systemd_path }}/placeholder-backup-borg.timer"
+        state: absent

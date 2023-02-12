@@ -1,0 +1,10 @@
+[Unit]
+Description=placeholder Borg Backup timer
+
+[Timer]
+Unit=placeholder-backup-borg.service
+OnCalendar={{ placeholder_backup_borg_schedule }}
+RandomizedDelaySec={{ placeholder_backup_borg_schedule_randomized_delay_sec }}
+
+[Install]
+WantedBy=timers.target
