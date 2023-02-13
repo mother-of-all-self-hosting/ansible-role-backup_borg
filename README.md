@@ -12,7 +12,6 @@ This role *implicitly* depends on:
 - [`com.devture.ansible.role.playbook_help`](https://github.com/devture/com.devture.ansible.role.playbook_help)
 - [`com.devture.ansible.role.systemd_docker_base`](https://github.com/devture/com.devture.ansible.role.systemd_docker_base)
 
-
 ## Features
 
 ## Usage
@@ -24,6 +23,9 @@ Example playbook:
   roles:
     - role: galaxy/com.devture.ansible.role.systemd_docker_base
 
+    # This role is not required. We just use it in our example.
+    - role: galaxy/com.devture.ansible.role.postgres
+
     - role: galaxy/ansible.role.backup_borg
 
     - role: another_role
@@ -32,6 +34,10 @@ Example playbook:
 Example playbook configuration (`group_vars/servers` or other):
 
 ```yaml
+# The configuration below wires the backup-borg role with `com.devture.ansible.role.postgres` (`devture_postgres_*`).
+# This is just an example, however. You can use this backup borg role without it.
+# See: https://github.com/devture/com.devture.ansible.role.postgres
+
 backup_borg_enabled: false
 
 backup_borg_identifier: my-borgbackup
@@ -42,6 +48,7 @@ backup_borg_username: "{{ my_username }}"
 backup_borg_uid: "{{ my_uid }}"
 backup_borg_gid: "{{ my_gid }}"
 
+backup_borg_container_network: "{{ devture_postgres_container_network if devture_postgres_enabled else backup_borg_identifier }}"
 
 backup_borg_container_image_self_build: "{{ architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
