@@ -24,15 +24,14 @@
 
 - name: Ensure borg paths exist
   ansible.builtin.file:
-    path: "{{ item.path }}"
+    path: "{{ item }}"
     state: directory
     mode: 0750
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
   with_items:
-    - {path: "{{ backup_borg_config_path }}", when: true}
-    - {path: "{{ backup_borg_docker_src_files_path }}", when: true}
-  when: "item.when | bool"
+    - "{{ backup_borg_config_path }}"
+    - "{{ backup_borg_docker_src_files_path }}"
 
 - name: Ensure borgmatic config is created
   ansible.builtin.copy:
@@ -93,15 +92,11 @@
       pull: true
   when: "backup_borg_container_image_self_build | bool"
 
-- name: Ensure backup-borg.service installed
+- name: Ensure backup-borg systemd service and timer are installed
   ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/backup-borg.service.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.service"
+    src: "{{ role_path }}/templates/systemd/backup-borg.{{ item }}.j2"
+    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.{{ item }}"
     mode: 0644
-  register: backup_borg_systemd_service_result
-
-- name: Ensure backup-borg.timer installed
-  ansible.builtin.template:
-    src: "{{ role_path }}/templates/systemd/backup-borg.timer.j2"
-    dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.timer"
-    mode: 0644
+  with_items:
+    - service
+    - timer
