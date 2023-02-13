@@ -5,12 +5,12 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - {'name': 'placeholder_backup_borg_ssh_key_private', when: true}
-    - {'name': 'placeholder_backup_borg_location_repositories', when: true}
-    - {'name': 'placeholder_backup_borg_postgresql_databases_hostname', when: "{{ placeholder_backup_borg_postgresql_enabled }}"}
+    - {'name': 'backup_borg_ssh_key_private', when: true}
+    - {'name': 'backup_borg_location_repositories', when: true}
+    - {'name': 'backup_borg_postgresql_databases_hostname', when: "{{ backup_borg_postgresql_enabled }}"}
 
 - name: Fail if encryption passphrase is undefined unless repository is unencrypted
   ansible.builtin.fail:
     msg: >-
-      You need to define a required passphrase using the `placeholder_backup_borg_storage_encryption_passphrase` variable.
-  when: "placeholder_backup_borg_storage_encryption_passphrase == '' and placeholder_backup_borg_encryption != 'none'"
+      You need to define a required passphrase using the `backup_borg_storage_encryption_passphrase` variable.
+  when: "backup_borg_storage_encryption_passphrase == '' and backup_borg_encryption != 'none'"

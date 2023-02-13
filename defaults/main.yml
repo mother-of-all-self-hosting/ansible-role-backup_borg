@@ -1,110 +1,110 @@
 ---
 # Project source code URL: https://gitlab.com/etke.cc/borgmatic
 
-placeholder_backup_borg_enabled: true
+backup_borg_enabled: true
 
-placeholder_backup_borg_identifier: 'placeholder-backup-borg'
-placeholder_backup_borg_username: 'placeholder-backup-borg'
+backup_borg_identifier: 'backup-borg'
+backup_borg_username: 'backup-borg'
 
-placeholder_backup_borg_base_path: "/{{ placeholder_backup_borg_identifier }}"
-placeholder_backup_borg_config_path: "{{ placeholder_backup_borg_base_path }}/config"
+backup_borg_base_path: "/{{ backup_borg_identifier }}"
+backup_borg_config_path: "{{ backup_borg_base_path }}/config"
 
-placeholder_backup_borg_container_image_self_build: false
-placeholder_backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
-placeholder_backup_borg_docker_repo_version: main
-placeholder_backup_borg_docker_src_files_path: "{{ placeholder_backup_borg_base_path }}/docker-src"
+backup_borg_container_image_self_build: false
+backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
+backup_borg_docker_repo_version: main
+backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 
 # image and postgres version determined automatically, based on detected postgres server version (if enabled), otherwise latest is used
-placeholder_backup_borg_version: ""
-placeholder_backup_borg_postgres_version: ""
-placeholder_backup_borg_borg_version: 1.2.3
-placeholder_backup_borg_borgmatic_version: 1.7.5
-placeholder_backup_borg_docker_image: "{{ placeholder_backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ placeholder_backup_borg_version }}"
-placeholder_backup_borg_docker_image_name_prefix: "{{ 'localhost/' if placeholder_backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
-placeholder_backup_borg_docker_image_force_pull: "{{ placeholder_backup_borg_docker_image.endswith(':latest') or placeholder_backup_borg_version | default('') == '' }}"
+backup_borg_version: ""
+backup_borg_postgres_version: ""
+backup_borg_borg_version: 1.2.3
+backup_borg_borgmatic_version: 1.7.5
+backup_borg_docker_image: "{{ backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ backup_borg_version }}"
+backup_borg_docker_image_name_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
+backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') or backup_borg_version | default('') == '' }}"
 
 # A list of extra arguments to pass to the container
-placeholder_backup_borg_container_extra_arguments: []
+backup_borg_container_extra_arguments: []
 
 # List of systemd services that matrix-backup-borg.service depends on
-placeholder_backup_borg_systemd_required_services_list: ['docker.service']
+backup_borg_systemd_required_services_list: ['docker.service']
 
 # List of systemd services that matrix-backup-borg.service wants
-placeholder_backup_borg_systemd_wanted_services_list: []
+backup_borg_systemd_wanted_services_list: []
 
 # systemd calendar configuration for the backup job
-# the actual job may run with a delay (see placeholder_backup_borg_schedule_randomized_delay_sec)
-placeholder_backup_borg_schedule: "*-*-* 04:00:00"
-# the delay with which the systemd timer may run in relation to the `placeholder_backup_borg_schedule` schedule
-placeholder_backup_borg_schedule_randomized_delay_sec: 2h
+# the actual job may run with a delay (see backup_borg_schedule_randomized_delay_sec)
+backup_borg_schedule: "*-*-* 04:00:00"
+# the delay with which the systemd timer may run in relation to the `backup_borg_schedule` schedule
+backup_borg_schedule_randomized_delay_sec: 2h
 
 # what directories should be added to backup
-placeholder_backup_borg_location_source_directories: []
+backup_borg_location_source_directories: []
 
 # postgres db backup
-placeholder_backup_borg_postgresql_enabled: true
-placeholder_backup_borg_supported_postgres_versions: ['12', '13', '14', '15']
-placeholder_backup_borg_postgresql_databases: []
-placeholder_backup_borg_postgresql_databases_hostname: ''
-placeholder_backup_borg_postgresql_databases_username: "placeholder"
-placeholder_backup_borg_postgresql_databases_password: ""
-placeholder_backup_borg_postgresql_databases_port: 5432
+backup_borg_postgresql_enabled: true
+backup_borg_supported_postgres_versions: ['12', '13', '14', '15']
+backup_borg_postgresql_databases: []
+backup_borg_postgresql_databases_hostname: ''
+backup_borg_postgresql_databases_username: "{{ backup_borg_identifier }}"
+backup_borg_postgresql_databases_password: ""
+backup_borg_postgresql_databases_port: 5432
 
 # target repositories
-placeholder_backup_borg_location_repositories: []
+backup_borg_location_repositories: []
 
 # exclude following paths:
-placeholder_backup_borg_location_exclude_patterns: []
+backup_borg_location_exclude_patterns: []
 
 # borg encryption mode, only "repokey-*" and "none" are supported
-placeholder_backup_borg_encryption: repokey-blake2
+backup_borg_encryption: repokey-blake2
 
 # private ssh key used to connect to the borg repo
-placeholder_backup_borg_ssh_key_private: ""
+backup_borg_ssh_key_private: ""
 
 # allow unencrypted repo access
-placeholder_backup_borg_unknown_unencrypted_repo_access_is_ok: "{{ placeholder_backup_borg_encryption == 'none' }}"
+backup_borg_unknown_unencrypted_repo_access_is_ok: "{{ backup_borg_encryption == 'none' }}"
 
 # borg ssh command with ssh key
-placeholder_backup_borg_storage_ssh_command: ssh -o "StrictHostKeyChecking accept-new" -i /etc/borgmatic.d/sshkey
+backup_borg_storage_ssh_command: ssh -o "StrictHostKeyChecking accept-new" -i /etc/borgmatic.d/sshkey
 
 # compression algorithm
-placeholder_backup_borg_storage_compression: lz4
+backup_borg_storage_compression: lz4
 
 # archive name format
-placeholder_backup_borg_storage_archive_name_format: placeholder-{now:%Y-%m-%d-%H%M%S}
+backup_borg_storage_archive_name_format: backup-borg-{now:%Y-%m-%d-%H%M%S}
 
 # repository passphrase
-placeholder_backup_borg_storage_encryption_passphrase: ""
+backup_borg_storage_encryption_passphrase: ""
 
 # retention configuration
-placeholder_backup_borg_retention_keep_hourly: 0
-placeholder_backup_borg_retention_keep_daily: 7
-placeholder_backup_borg_retention_keep_weekly: 4
-placeholder_backup_borg_retention_keep_monthly: 12
-placeholder_backup_borg_retention_keep_yearly: 2
+backup_borg_retention_keep_hourly: 0
+backup_borg_retention_keep_daily: 7
+backup_borg_retention_keep_weekly: 4
+backup_borg_retention_keep_monthly: 12
+backup_borg_retention_keep_yearly: 2
 
 # retention prefix
-placeholder_backup_borg_retention_prefix: placeholder-
+backup_borg_retention_prefix: backup-borg-
 
 # Default borgmatic configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #
-# For a more advanced customization, you can extend the default (see `placeholder_backup_borg_configuration_extension_yaml`)
+# For a more advanced customization, you can extend the default (see `backup_borg_configuration_extension_yaml`)
 # or completely replace this variable with your own template.
-placeholder_backup_borg_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
+backup_borg_configuration_yaml: "{{ lookup('template', 'templates/config.yaml.j2') }}"
 
-placeholder_backup_borg_configuration_extension_yaml: |
+backup_borg_configuration_extension_yaml: |
   # Your custom YAML configuration for borgmatic goes here.
-  # This configuration extends the default starting configuration (`placeholder_borg_configuration_yaml`).
+  # This configuration extends the default starting configuration (`borg_configuration_yaml`).
   #
   # You can override individual variables from the default configuration, or introduce new ones.
   #
   # If you need something more special, you can take full control by
-  # completely redefining `placeholder_backup_borg_configuration_yaml`.
+  # completely redefining `backup_borg_configuration_yaml`.
 
-placeholder_backup_borg_configuration_extension: "{{ placeholder_backup_borg_configuration_extension_yaml | from_yaml if placeholder_backup_borg_configuration_extension_yaml | from_yaml is mapping else {} }}"
+backup_borg_configuration_extension: "{{ backup_borg_configuration_extension_yaml | from_yaml if backup_borg_configuration_extension_yaml | from_yaml is mapping else {} }}"
 
 # Holds the final borgmatic configuration (a combination of the default and its extension).
-# You most likely don't need to touch this variable. Instead, see `placeholder_backup_borg_configuration_yaml`.
-placeholder_backup_borg_configuration: "{{ placeholder_backup_borg_configuration_yaml | from_yaml | combine(placeholder_backup_borg_configuration_extension, recursive=True) }}"
+# You most likely don't need to touch this variable. Instead, see `backup_borg_configuration_yaml`.
+backup_borg_configuration: "{{ backup_borg_configuration_yaml | from_yaml | combine(backup_borg_configuration_extension, recursive=True) }}"

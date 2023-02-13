@@ -32,30 +32,30 @@ Example playbook:
 Example playbook configuration (`group_vars/servers` or other):
 
 ```yaml
-placeholder_backup_borg_enabled: false
+backup_borg_enabled: false
 
-placeholder_backup_borg_identifier: my-borgbackup
+backup_borg_identifier: my-borgbackup
 
-placeholder_backup_borg_base_path: "{{ my_base_path }}/backup_borg"
+backup_borg_base_path: "{{ my_base_path }}/backup_borg"
 
-placeholder_backup_borg_username: "{{ my_username }}"
-placeholder_backup_borg_uid: "{{ my_uid }}"
-placeholder_backup_borg_gid: "{{ my_gid }}"
+backup_borg_username: "{{ my_username }}"
+backup_borg_uid: "{{ my_uid }}"
+backup_borg_gid: "{{ my_gid }}"
 
 
-placeholder_backup_borg_container_image_self_build: "{{ placeholder_architecture not in ['amd64', 'arm32', 'arm64'] }}"
+backup_borg_container_image_self_build: "{{ architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
-placeholder_backup_borg_postgresql_enabled: "{{ devture_postgres_enabled }}"
-placeholder_backup_borg_postgresql_databases_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
-placeholder_backup_borg_postgresql_databases_username: "{{ devture_postgres_connection_username if devture_postgres_enabled else '' }}"
-placeholder_backup_borg_postgresql_databases_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
-placeholder_backup_borg_postgresql_databases_port: "{{ devture_postgres_connection_port if devture_postgres_enabled else 5432 }}"
-placeholder_backup_borg_postgresql_databases: "{{ devture_postgres_managed_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
+backup_borg_postgresql_enabled: "{{ devture_postgres_enabled }}"
+backup_borg_postgresql_databases_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
+backup_borg_postgresql_databases_username: "{{ devture_postgres_connection_username if devture_postgres_enabled else '' }}"
+backup_borg_postgresql_databases_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
+backup_borg_postgresql_databases_port: "{{ devture_postgres_connection_port if devture_postgres_enabled else 5432 }}"
+backup_borg_postgresql_databases: "{{ devture_postgres_managed_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
 
-placeholder_backup_borg_location_source_directories:
+backup_borg_location_source_directories:
   - "{{ my_data_path }}"
 
-placeholder_backup_borg_systemd_required_services_list: |
+backup_borg_systemd_required_services_list: |
   {{
     ['docker.service']
     +
@@ -65,11 +65,11 @@ placeholder_backup_borg_systemd_required_services_list: |
 
 A user must set a configuration like this in their `vars.yml`
 ```yaml
-placeholder_backup_borg_enabled: true
-placeholder_backup_borg_location_repositories:
+backup_borg_enabled: true
+backup_borg_location_repositories:
  - ssh://user@host/./repo
-placeholder_backup_borg_storage_encryption_passphrase: "verysecret"
-placeholder_backup_borg_ssh_key_private: |
+backup_borg_storage_encryption_passphrase: "verysecret"
+backup_borg_ssh_key_private: |
   -----BEGIN OPENSSH PRIVATE KEY-----
   ladlfjahfuinsjklydnhawfmf
   adsjfajgiuhesrgadsjfahfuihaewuighf

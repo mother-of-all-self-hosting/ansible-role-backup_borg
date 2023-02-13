@@ -25,5 +25,5 @@ vpopmail:x:89:89::/var/vpopmail:/sbin/nologin
 ntp:x:123:123:NTP:/var/empty:/sbin/nologin
 smmsp:x:209:209:smmsp:/var/spool/mqueue:/sbin/nologin
 guest:x:405:100:guest:/dev/null:/sbin/nologin
-{{ placeholder_backup_borg_username }}:x:{{ placeholder_backup_borg_uid }}:{{ placeholder_backup_borg_gid }}:Backup-borg:/tmp:/bin/bash
+{{ backup_borg_username }}:x:{{ backup_borg_uid }}:{{ backup_borg_gid }}:Backup-borg:/tmp:/bin/bash
 nobody:x:65534:65534:nobody:/:/sbin/nologin
