@@ -23,3 +23,8 @@
       ansible.builtin.file:
         path: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.timer"
         state: absent
+
+    - name: Ensure backup-borg files are removed
+      ansible.builtin.file:
+        path: "{{ backup_borg_base_path }}"
+        state: absent
