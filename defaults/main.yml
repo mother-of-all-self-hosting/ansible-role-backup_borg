@@ -8,11 +8,11 @@ backup_borg_username: 'backup-borg'
 
 backup_borg_uid: ""
 backup_borg_gid: ""
-backup_borg_container_network: "{{ backup_borg_identifier }}"
-
 
 backup_borg_base_path: "/{{ backup_borg_identifier }}"
 backup_borg_config_path: "{{ backup_borg_base_path }}/config"
+
+backup_borg_container_network: "{{ backup_borg_identifier }}"
 
 backup_borg_container_image_self_build: false
 backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
