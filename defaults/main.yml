@@ -6,6 +6,11 @@ backup_borg_enabled: true
 backup_borg_identifier: 'backup-borg'
 backup_borg_username: 'backup-borg'
 
+backup_borg_uid: ""
+backup_borg_gid: ""
+backup_borg_container_network: ""
+
+
 backup_borg_base_path: "/{{ backup_borg_identifier }}"
 backup_borg_config_path: "{{ backup_borg_base_path }}/config"
 
