@@ -1,6 +1,4 @@
-# Borg Backup Role
-
-# Postgres Ansible role
+# Borg Backup Ansible Role
 
 This is an [Ansible](https://www.ansible.com/) role which install and configure [borgbackup](https://www.borgbackup.org/) with [borgmatic](https://torsion.org/borgmatic/) a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 BorgBackup is a deduplicating backup program with optional compression and encryption.
