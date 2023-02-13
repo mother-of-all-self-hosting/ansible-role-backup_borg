@@ -48,6 +48,13 @@ backup_borg_username: "{{ my_username }}"
 backup_borg_uid: "{{ my_uid }}"
 backup_borg_gid: "{{ my_gid }}"
 
+# We assume Postgres is installed via the `com.devture.ansible.role.postgres` role.
+# Remove this and any `devture_postgres_*` reference below, if that's not the case.
+backup_borg_postgresql_version_detection_devture_postgres_role_name: galaxy/com.devture.ansible.role.postgres
+
+# If you will use this without `com.devture.ansible.role.postgres`, you'll need to set the major Postgres version manually instead.
+# backup_borg_postgres_version: 15
+
 backup_borg_container_network: "{{ devture_postgres_container_network if devture_postgres_enabled else backup_borg_identifier }}"
 
 backup_borg_container_image_self_build: "{{ architecture not in ['amd64', 'arm32', 'arm64'] }}"

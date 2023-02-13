@@ -1,16 +1,24 @@
 ---
 
-- when: backup_borg_postgresql_enabled | bool and backup_borg_version == ''
+- when: backup_borg_postgresql_enabled | bool and backup_borg_postgresql_version_detection_enabled | bool and backup_borg_postgres_version != ''
   block:
-    - name: Fail with backup_borg_version advice if Postgres not enabled
+    - name: Fail with devture_postgres_enabled is undefined
       ansible.builtin.fail:
         msg: >-
-          You are not running a built-in Postgres server (`devture_postgres_enabled: false`), so auto-detecting its version and setting `backup_borg_version` automatically based on that cannot happen.
-          Consider setting `backup_borg_version` to your Postgres version manually.
+          You have not set `backup_borg_postgres_version`, which means we'll attempt to auto-detect it.
+          Auto-detection expects that you're running the `com.devture.ansible.role.postgres role`.
+          You either need to run Postgres via that role, or you need to set `backup_borg_postgres_version` manually.
+      when: devture_postgres_enabled is not defined
+
+    - name: Fail with devture_postgres_enabled not enabled
+      ansible.builtin.fail:
+        msg: >-
+          You are not running a built-in Postgres server (`devture_postgres_enabled: false`), so auto-detecting its version and setting `backup_borg_postgres_version` automatically based on that cannot happen.
+          Consider setting `backup_borg_postgres_version` to your Postgres version manually.
       when: not devture_postgres_enabled
 
     - ansible.builtin.include_role:
-        name: galaxy/com.devture.ansible.role.postgres
+        name: "{{ backup_borg_postgresql_version_detection_devture_postgres_role_name }}"
         tasks_from: detect_existing_postgres_version
 
     - name: Fail if detected Postgres version is unsupported
@@ -20,7 +28,7 @@
 
     - name: Set the correct borg backup version to use
       ansible.builtin.set_fact:
-        backup_borg_version: "{{ devture_postgres_detected_version }}-{{ backup_borg_borg_version }}-{{ backup_borg_borgmatic_version }}"
+        backup_borg_postgres_version: "{{ devture_postgres_detected_version }}"
 
 - name: Ensure borg paths exist
   ansible.builtin.file:

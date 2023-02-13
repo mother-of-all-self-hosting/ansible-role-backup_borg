@@ -19,14 +19,15 @@ backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
 backup_borg_docker_repo_version: main
 backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 
-# image and postgres version determined automatically, based on detected postgres server version (if enabled), otherwise latest is used
-backup_borg_version: ""
+# Image and Postgres version are determined automatically, based on the detected Postgres server version (if enabled), otherwise latest is used
+# Also see the `backup_borg_postgresql_version_detection_*` variables.
+backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
 backup_borg_postgres_version: ""
 backup_borg_borg_version: 1.2.3
 backup_borg_borgmatic_version: 1.7.6
 backup_borg_docker_image: "{{ backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ backup_borg_version }}"
 backup_borg_docker_image_name_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
-backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') or backup_borg_version | default('') == '' }}"
+backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') }}"
 
 # A list of extra arguments to pass to the container
 backup_borg_container_extra_arguments: []
@@ -54,6 +55,10 @@ backup_borg_postgresql_databases_hostname: ''
 backup_borg_postgresql_databases_username: "{{ backup_borg_identifier }}"
 backup_borg_postgresql_databases_password: ""
 backup_borg_postgresql_databases_port: 5432
+backup_borg_postgresql_version_detection_enabled: "{{ backup_borg_postgresql_version_detection_devture_postgres_role_name != '' }}"
+# backup_borg_postgresql_version_detection_devture_postgres_role_name lets you control the role name, leading to the com.devture.ansible.role.postgres.
+# This role is invoked to determine the Postgres version, unless you have set `backup_borg_version` manually.
+backup_borg_postgresql_version_detection_devture_postgres_role_name: ''
 
 # target repositories
 backup_borg_location_repositories: []
