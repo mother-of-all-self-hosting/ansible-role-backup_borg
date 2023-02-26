@@ -1,6 +1,6 @@
 ---
 
-- when: backup_borg_postgresql_enabled | bool and backup_borg_postgresql_version_detection_enabled | bool and backup_borg_postgres_version != ''
+- when: backup_borg_postgresql_enabled | bool and backup_borg_postgresql_version_detection_enabled | bool and backup_borg_postgres_version == ''
   block:
     - name: Fail with devture_postgres_enabled is undefined
       ansible.builtin.fail:
