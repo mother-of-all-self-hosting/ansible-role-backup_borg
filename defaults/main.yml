@@ -10,7 +10,9 @@ backup_borg_uid: ""
 backup_borg_gid: ""
 
 backup_borg_base_path: "/{{ backup_borg_identifier }}"
+backup_borg_bin_path: "{{ backup_borg_base_path }}/bin"
 backup_borg_config_path: "{{ backup_borg_base_path }}/config"
+backup_borg_restore_path: "{{ backup_borg_base_path }}/restored"
 
 backup_borg_container_network: "{{ backup_borg_identifier }}"
 

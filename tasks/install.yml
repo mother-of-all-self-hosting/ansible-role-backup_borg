@@ -38,7 +38,9 @@
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
   with_items:
+    - "{{ backup_borg_bin_path }}"
     - "{{ backup_borg_config_path }}"
+    - "{{ backup_borg_restore_path }}"
     - "{{ backup_borg_docker_src_files_path }}"
 
 - name: Ensure borgmatic config is created
@@ -48,6 +50,14 @@
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
     mode: 0640
+
+- name: Ensure borgmatic script is created
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/bin/borgmatic.j2"
+    dest: "{{ backup_borg_bin_path }}/borgmatic"
+    owner: "{{ backup_borg_uid }}"
+    group: "{{ backup_borg_gid }}"
+    mode: 0750
 
 - name: Ensure borg passwd is created
   ansible.builtin.template:
