@@ -30,7 +30,7 @@
       ansible.builtin.set_fact:
         backup_borg_postgres_version: "{{ devture_postgres_detected_version }}"
 
-- name: Ensure borg paths exist
+- name: Ensure borg docker data paths exist
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -41,6 +41,13 @@
     - "{{ backup_borg_bin_path }}"
     - "{{ backup_borg_config_path }}"
     - "{{ backup_borg_restore_path }}"
+
+- name: Ensure borg build paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0750
+  with_items:
     - "{{ backup_borg_docker_src_files_path }}"
 
 - name: Ensure borgmatic config is created
@@ -93,8 +100,6 @@
     version: "{{ backup_borg_docker_repo_version }}"
     dest: "{{ backup_borg_docker_src_files_path }}"
     force: "yes"
-  become: true
-  become_user: "{{ user_username }}"
   register: backup_borg_git_pull_results
   when: "backup_borg_container_image_self_build | bool"
 
@@ -106,6 +111,10 @@
     force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else mailer_git_pull_results.changed }}"
     build:
       dockerfile: Dockerfile
+      args:
+        POSTGRES_VERSION: "{{ backup_borg_postgres_version }}"
+        BORG_VERSION: "{{ backup_borg_borg_version }}"
+        BORGMATIC_VERSION: "{{ backup_borg_borgmatic_version }}"
       path: "{{ backup_borg_docker_src_files_path }}"
       pull: true
   when: "backup_borg_container_image_self_build | bool"
