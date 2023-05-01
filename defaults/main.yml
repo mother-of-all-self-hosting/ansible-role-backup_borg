@@ -62,6 +62,13 @@ backup_borg_postgresql_version_detection_enabled: "{{ backup_borg_postgresql_ver
 # This role is invoked to determine the Postgres version, unless you have set `backup_borg_version` manually.
 backup_borg_postgresql_version_detection_devture_postgres_role_name: ''
 
+backup_borg_mysql_enabled: true
+backup_borg_mysql_databases: []
+backup_borg_mysql_databases_hostname: ''
+backup_borg_mysql_databases_username: "{{ backup_borg_identifier }}"
+backup_borg_mysql_databases_password: ""
+backup_borg_mysql_databases_port: 3306
+
 # target repositories
 backup_borg_location_repositories: []
 
