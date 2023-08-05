@@ -5,7 +5,7 @@ location:
   source_directories: {{ backup_borg_location_source_directories|to_json }}
   repositories:
     {% for repo in backup_borg_location_repositories %}
-    - path: repository
+    - path: {{ repo }}
     {% endfor %}
   exclude_patterns: {{ backup_borg_location_exclude_patterns|to_json }}
 
