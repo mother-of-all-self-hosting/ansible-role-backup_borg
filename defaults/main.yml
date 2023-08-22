@@ -26,7 +26,7 @@ backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
 backup_borg_postgres_version: ""
 backup_borg_borg_version: 1.2.4
-backup_borg_borgmatic_version: 1.7.15
+backup_borg_borgmatic_version: 1.8.2
 backup_borg_docker_image: "{{ backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ backup_borg_version }}"
 backup_borg_docker_image_name_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
 backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') }}"
@@ -106,9 +106,6 @@ backup_borg_retention_keep_daily: 7
 backup_borg_retention_keep_weekly: 4
 backup_borg_retention_keep_monthly: 12
 backup_borg_retention_keep_yearly: 2
-
-# retention prefix
-backup_borg_retention_prefix: backup-borg-
 
 # Default borgmatic configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
