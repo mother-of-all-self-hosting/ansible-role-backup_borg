@@ -6,8 +6,8 @@
 		--cap-add=CAP_DAC_OVERRIDE \
 		--read-only \
 		--network={{ backup_borg_container_network }} \
-		--tmpfs=/root:rw,noexec,nosuid,size=100m \
-		--tmpfs=/tmp:rw,noexec,nosuid,size=100m \
+		--tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
+		--tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
 		--mount type=bind,src={{ backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
 		--mount type=bind,src={{ backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
 		--mount type=bind,src={{ backup_borg_restore_path }},dst=/restore \

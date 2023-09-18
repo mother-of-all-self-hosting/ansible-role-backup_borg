@@ -31,6 +31,9 @@ backup_borg_docker_image: "{{ backup_borg_docker_image_name_prefix }}etke.cc/bor
 backup_borg_docker_image_name_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
 backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') }}"
 
+# container tmp directory size
+backup_borg_container_tmp_size: 4096m
+
 # A list of extra arguments to pass to the container
 backup_borg_container_extra_arguments: []
 
