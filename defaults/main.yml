@@ -25,7 +25,7 @@ backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 # Also see the `backup_borg_postgresql_version_detection_*` variables.
 backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
 backup_borg_postgres_version: ""
-backup_borg_borg_version: 1.2.4
+backup_borg_borg_version: 1.2.6
 backup_borg_borgmatic_version: 1.8.2
 backup_borg_docker_image: "{{ backup_borg_docker_image_name_prefix }}etke.cc/borgmatic:{{ backup_borg_version }}"
 backup_borg_docker_image_name_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else 'registry.gitlab.com/' }}"
@@ -54,7 +54,7 @@ backup_borg_location_source_directories: []
 
 # postgres db backup
 backup_borg_postgresql_enabled: true
-backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16']
+backup_borg_supported_postgres_versions: ['12', '13', '14', '15']
 backup_borg_postgresql_databases: []
 backup_borg_postgresql_databases_hostname: ''
 backup_borg_postgresql_databases_username: "{{ backup_borg_identifier }}"
