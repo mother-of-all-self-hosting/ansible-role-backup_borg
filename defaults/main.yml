@@ -60,10 +60,10 @@ backup_borg_postgresql_databases_hostname: ''
 backup_borg_postgresql_databases_username: "{{ backup_borg_identifier }}"
 backup_borg_postgresql_databases_password: ""
 backup_borg_postgresql_databases_port: 5432
-backup_borg_postgresql_version_detection_enabled: "{{ backup_borg_postgresql_version_detection_devture_postgres_role_name != '' }}"
-# backup_borg_postgresql_version_detection_devture_postgres_role_name lets you control the role name, leading to the com.devture.ansible.role.postgres.
+backup_borg_postgresql_version_detection_enabled: "{{ backup_borg_postgresql_version_detection_postgres_role_name != '' }}"
+# backup_borg_postgresql_version_detection_postgres_role_name lets you control the role name, leading to the com.devture.ansible.role.postgres.
 # This role is invoked to determine the Postgres version, unless you have set `backup_borg_version` manually.
-backup_borg_postgresql_version_detection_devture_postgres_role_name: ''
+backup_borg_postgresql_version_detection_postgres_role_name: ''
 
 backup_borg_mysql_enabled: true
 backup_borg_mysql_databases: []

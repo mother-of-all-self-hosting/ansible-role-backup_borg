@@ -2,33 +2,36 @@
 
 - when: backup_borg_postgresql_enabled | bool and backup_borg_postgresql_version_detection_enabled | bool and backup_borg_postgres_version == ''
   block:
-    - name: Fail with devture_postgres_enabled is undefined
+    - name: Fail with postgres_enabled is undefined
       ansible.builtin.fail:
         msg: >-
           You have not set `backup_borg_postgres_version`, which means we'll attempt to auto-detect it.
-          Auto-detection expects that you're running the `com.devture.ansible.role.postgres role`.
+          Auto-detection expects that you're running the `postgres role`.
           You either need to run Postgres via that role, or you need to set `backup_borg_postgres_version` manually.
-      when: devture_postgres_enabled is not defined
+      when: postgres_enabled is not defined
 
-    - name: Fail with devture_postgres_enabled not enabled
+    - name: Fail with postgres_enabled not enabled
       ansible.builtin.fail:
         msg: >-
-          You are not running a built-in Postgres server (`devture_postgres_enabled: false`), so auto-detecting its version and setting `backup_borg_postgres_version` automatically based on that cannot happen.
+          You are not running a built-in Postgres server (`postgres_enabled: false`), so auto-detecting its version and setting `backup_borg_postgres_version` automatically based on that cannot happen.
           Consider setting `backup_borg_postgres_version` to your Postgres version manually.
-      when: not devture_postgres_enabled
+      when: not postgres_enabled
 
     - ansible.builtin.include_role:
-        name: "{{ backup_borg_postgresql_version_detection_devture_postgres_role_name }}"
+        name: "{{ backup_borg_postgresql_version_detection_postgres_role_name }}"
         tasks_from: detect_existing_postgres_version
+
+    - debug:
+        msg: "Detected Postgres version: {{ postgres_detected_version }}"
 
     - name: Fail if detected Postgres version is unsupported
       ansible.builtin.fail:
-        msg: "You cannot use borg backup with such an old version ({{ devture_postgres_detected_version }}) of Postgres. Consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql"
-      when: "devture_postgres_detected_version not in backup_borg_supported_postgres_versions"
+        msg: "You cannot use borg backup with Postgres v{{ postgres_detected_version }}. If you are using an old Postgres version, consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql HOWEVER, if you are using a new Postgres version, there is a high chance that the version is not supported by borg backup yet (supported versions: {{ backup_borg_supported_postgres_versions }}). You can't do anything with that, details: https://github.com/etkecc/borgmatic/pull/1"
+      when: "postgres_detected_version not in backup_borg_supported_postgres_versions"
 
     - name: Set the correct borg backup version to use
       ansible.builtin.set_fact:
-        backup_borg_postgres_version: "{{ devture_postgres_detected_version }}"
+        backup_borg_postgres_version: "{{ postgres_detected_version }}"
 
 - name: Ensure borg docker data paths exist
   ansible.builtin.file:
