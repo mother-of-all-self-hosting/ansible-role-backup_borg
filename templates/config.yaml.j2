@@ -8,6 +8,8 @@ repositories:
   - path: {{ repo }}
   {% endfor %}
 exclude_patterns: {{ backup_borg_location_exclude_patterns|to_json }}
+# compatilibity with borgmatic < 1.9.0 to avoid db backups location shifts
+user_runtime_directory: /root/.borgmatic
 
 # storage
 compression: {{ backup_borg_storage_compression|to_json }}
