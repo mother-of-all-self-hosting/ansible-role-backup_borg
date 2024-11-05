@@ -122,6 +122,12 @@
       pull: true
   when: "backup_borg_container_image_self_build | bool"
 
+- name: Ensure borg container network is created
+  community.general.docker_network:
+    name: "{{ backup_borg_container_network }}"
+    driver: bridge
+    driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
+
 - name: Ensure backup-borg systemd service and timer are installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/backup-borg.{{ item }}.j2"
