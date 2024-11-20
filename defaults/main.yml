@@ -54,7 +54,7 @@ backup_borg_location_source_directories: []
 
 # postgres db backup
 backup_borg_postgresql_enabled: true
-backup_borg_supported_postgres_versions: ['14', '15', '16']
+backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16', '17']
 backup_borg_postgresql_databases: []
 backup_borg_postgresql_databases_hostname: ''
 backup_borg_postgresql_databases_username: "{{ backup_borg_identifier }}"
