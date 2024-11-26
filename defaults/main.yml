@@ -17,7 +17,7 @@ backup_borg_restore_path: "{{ backup_borg_base_path }}/restored"
 backup_borg_container_network: "{{ backup_borg_identifier }}"
 
 backup_borg_container_image_self_build: false
-backup_borg_docker_repo: "https://gitlab.com/etke.cc/borgmatic"
+backup_borg_docker_repo: "https://github.com/etkecc/borgmatic"
 backup_borg_docker_repo_version: main
 backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 
