@@ -26,7 +26,7 @@ backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
 backup_borg_postgres_version: ""
 backup_borg_borg_version: 1.4.0
-backup_borg_borgmatic_version: 1.9.6
+backup_borg_borgmatic_version: 1.9.9
 backup_borg_docker_image: "{{ backup_borg_docker_image_name_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
 backup_borg_docker_image_name_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else 'ghcr.io/' }}"
 backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') }}"
