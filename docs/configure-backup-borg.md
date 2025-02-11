@@ -28,19 +28,21 @@ Unless you disable the Postgres-backup support, make sure that the Postgres vers
 
 An alternative solution for backing up the Postgres database is [postgres backup](https://github.com/devture/com.devture.ansible.role.postgres_backup). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
 
+### Create a new SSH key
 
-
-The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
-
-## Prerequisites
-
-1. Create a new SSH key:
+Run the command below on any machine to create a new SSH key:
 
 ```bash
 ssh-keygen -t ed25519 -N '' -f borg-backup -C borg-backup
 ```
 
-This can be done on any machine, and you don't need to place the key in the `.ssh` folder. It will be added to the Ansible config later.
+You don't need to place the key in the `.ssh` folder.
+
+
+
+The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
+
+## Prerequisites
 
 2. Add the **public** part of this SSH key (the `borg-backup.pub` file) to your borg provider/server:
 
