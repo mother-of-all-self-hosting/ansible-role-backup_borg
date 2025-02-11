@@ -95,9 +95,13 @@ backup_borg_ssh_key_private: |
 
 You might also want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable.
 
+### Extending the configuration
 
+There are some additional things you may wish to configure about the component.
 
-Check the `defaults/main.yml` file for the full list of available options.
+Take a look at:
+
+- [`defaults/main.yml`](../defaults/main.yml) for some variables that you can customize via your `vars.yml` file. You can override settings (even those that don't have dedicated playbook variables) using the `backup_borg_configuration_extension_yaml` variable
 
 ## Installing
 
