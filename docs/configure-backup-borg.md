@@ -54,10 +54,6 @@ cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc
 
 The **private** key needs to be added to `backup_borg_ssh_key_private` on your `vars.yml` file as below.
 
-## Prerequisites
-
-The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
-
 ## Adjusting the playbook configuration
 
 To enable BorgBackup, add the following configuration to your `vars.yml` file (adapt to your needs):
@@ -108,6 +104,18 @@ backup_borg_retention_keep_weekly: 4
 backup_borg_retention_keep_monthly: 12
 backup_borg_retention_keep_yearly: 2
 ```
+
+### Edit the schedule (optional)
+
+By default the task will run 4 a.m. every day based on the `backup_borg_schedule` variable. It is defined in the format of systemd timer calendar.
+
+To edit the schedule, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+backup_borg_schedule: "*-*-* 04:00:00"
+```
+
+**Note**: the actual job may run with a delay. See `backup_borg_schedule_randomized_delay_sec` [here](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/f5d5b473d48c6504be10b3d946255ef5c186c2a6/defaults/main.yml#L50) for its default value.
 
 ### Set include and/or exclude directories (optional)
 
