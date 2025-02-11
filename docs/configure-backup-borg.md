@@ -38,23 +38,25 @@ ssh-keygen -t ed25519 -N '' -f borg-backup -C borg-backup
 
 You don't need to place the key in the `.ssh` folder.
 
+### Add the public key
 
+Next, add the **public** part of this SSH key (the `borg-backup.pub` file) to your BorgBackup provider/server.
 
-The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
+If you are using a hosted solution, follow their instructions. If you have your own server, copy the key to it with the command like below:
+
+```sh
+# Example to append the new PUBKEY contents, where:
+# - PUBKEY is path to the public key
+# - USER is a ssh user on a provider / server
+# - HOST is a ssh host of a provider / server
+cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc'
+```
+
+The **private** key needs to be added to `backup_borg_ssh_key_private` on your `vars.yml` file as below.
 
 ## Prerequisites
 
-2. Add the **public** part of this SSH key (the `borg-backup.pub` file) to your borg provider/server:
-
-If you plan to use a hosted solution, follow their instructions. If you have your own server, copy the key over:
-
-```bash
-# example to append the new PUBKEY contents, where:
-# PUBKEY is path to the public key,
-# USER is a ssh user on a provider / server
-# HOST is a ssh host of a provider / server
-cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc'
-```
+The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
 
 ## Adjusting the playbook configuration
 
