@@ -97,6 +97,18 @@ You can specify the backup archive name format. To set it, add the following con
 backup_borg_storage_archive_name_format: backup-borg-{now:%Y-%m-%d-%H%M%S}
 ```
 
+### Configure retention policy (optional)
+
+It is also possible to configure a retention strategy. To configure it, add the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+backup_borg_retention_keep_hourly: 0
+backup_borg_retention_keep_daily: 7
+backup_borg_retention_keep_weekly: 4
+backup_borg_retention_keep_monthly: 12
+backup_borg_retention_keep_yearly: 2
+```
+
 ### Set include and/or exclude directories (optional)
 
 `backup_borg_location_source_directories` defines the list of directories to back up.
