@@ -14,14 +14,23 @@ The playbook can install and configure [BorgBackup](https://www.borgbackup.org/)
 
 BorgBackup is a deduplicating backup program with optional compression and encryption. That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
 
+## Prerequisites
+
+### Set up a remote server for storing backups
+
 You will need a remote server where borg will store the backups. There are hosted, borg compatible solutions available, such as [BorgBase](https://www.borgbase.com).
 
+### Check the Postgres version
+
+For some playbooks, if you're using the integrated Postgres database server, backups with BorgBackup will also include dumps of your Postgres database by default.
+
+Unless you disable the Postgres-backup support, make sure that the Postgres version of your homeserver's database is compatible with borgmatic. You can check the compatible versions [here](../defaults/main.yml).
+
+An alternative solution for backing up the Postgres database is [postgres backup](https://github.com/devture/com.devture.ansible.role.postgres_backup). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
+
+
+
 The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
-
-For some playbooks the with an integrated Postgres database server Borg backups will also include dumps of your Postgres database.
-An alternative solution for backing up the Postgres database is [postgres backup](https://github.com/devture/com.devture.ansible.role.postgres_backup).
-If you decide to go with another solution, you can disable Postgres-backup support for Borg using the `backup_borg_postgresql_enabled` variable.
-
 
 ## Prerequisites
 
