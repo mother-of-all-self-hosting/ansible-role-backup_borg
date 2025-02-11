@@ -1,6 +1,6 @@
 # BorgBackup Ansible Role
 
-This is an [Ansible](https://www.ansible.com/) role which installs and configures [BorgBackup](https://www.borgbackup.org/) (short: Borg) with [borgmatic](https://torsion.org/borgmatic/) and [Docker](https://www.docker.com/) container wrapped in a systemd service.
+This is an [Ansible](https://www.ansible.com/) role which installs and configures [BorgBackup](https://www.borgbackup.org/) (short: Borg) with [borgmatic](https://torsion.org/borgmatic/) in a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
 BorgBackup is a deduplicating backup program with optional compression and encryption. That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
 
