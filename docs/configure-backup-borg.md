@@ -135,6 +135,10 @@ Take a look at:
 
 After configuring the playbook, run the installation command of your playbook again.
 
+## Usage
+
+After installation, `backup-borg` will run automatically every day at `04:00:00` (as defined in `backup_borg_schedule` by default).
+
 ## Manually start a backup
 
 For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server
