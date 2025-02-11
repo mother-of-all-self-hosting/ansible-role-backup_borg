@@ -60,13 +60,23 @@ The backup will run based on `backup_borg_schedule` var (systemd timer calendar)
 
 ## Adjusting the playbook configuration
 
-Minimal working configuration to enable borg backup (this has to be added to your `vars.yml`:
+To enable BorgBackup, add the following configuration to your `vars.yml` file (adapt to your needs):
 
 ```yaml
 backup_borg_enabled: true
+
+# Set the repository location, where:
+# - USER is a ssh user on a provider / server
+# - HOST is a ssh host of a provider / server
+# - REPO is a BorgBackup repository name
 backup_borg_location_repositories:
  - ssh://USER@HOST/./REPO
+
+# Generate a strong password used for encrypting backups. You can create one with a command like `pwgen -s 64 1`.
 backup_borg_storage_encryption_passphrase: "PASSPHRASE"
+
+# Add the content of the **private** part of the SSH key you have created.
+# Note: the whole key (all of its belonging lines) under the variable needs to be indented with 2 spaces.
 backup_borg_ssh_key_private: |
   -----BEGIN OPENSSH PRIVATE KEY-----
   TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZW
