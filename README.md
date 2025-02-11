@@ -1,9 +1,8 @@
-# Borg Backup Ansible Role
+# BorgBackup Ansible Role
 
-This is an [Ansible](https://www.ansible.com/) role which install and configure [borgbackup](https://www.borgbackup.org/) with [borgmatic](https://torsion.org/borgmatic/) a [Docker](https://www.docker.com/) container wrapped in a systemd service.
-BorgBackup is a deduplicating backup program with optional compression and encryption.
-That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
+This is an [Ansible](https://www.ansible.com/) role which installs and configures [BorgBackup](https://www.borgbackup.org/) (short: Borg) with [borgmatic](https://torsion.org/borgmatic/) in a [Docker](https://www.docker.com/) container wrapped in a systemd service.
 
+BorgBackup is a deduplicating backup program with optional compression and encryption. That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
 
 This role *implicitly* depends on:
 
@@ -13,6 +12,8 @@ This role *implicitly* depends on:
 ## Features
 
 ## Usage
+
+💡 See the [document](docs/configure-backup-borg.md) for details about setting up BorgBackup.
 
 Example playbook:
 
@@ -89,5 +90,3 @@ backup_borg_ssh_key_private: |
   asdjfioghuifskermvbsjfhawuifui
   -----END OPENSSH PRIVATE KEY-----
 ```
-
-
