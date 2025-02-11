@@ -141,6 +141,8 @@ After installation, `backup-borg` will run automatically every day at `04:00:00`
 
 ## Manually start a backup
 
-For testing your setup it can be helpful to not wait until 4am. If you want to run the backup immediately, log onto the server
-and run `systemctl start backup-borg` (or how you/your playbook named the service, e.g. `matrix-backup-borg`). This will not return until the backup is done, so possibly a long time.
-Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
+Sometimes it can be helpful to run the backup as you'd like, avoiding to wait until 4 a.m., like when you test your configuration.
+
+If you want to run it immediately, log in to the server with SSH and run `systemctl start backup-borg` (or how you/your playbook named the service, e.g. `matrix-backup-borg`).
+
+This will not return until the backup is done, so it can possibly take a long time. Consider using [tmux](https://en.wikipedia.org/wiki/Tmux) if your SSH connection is unstable.
