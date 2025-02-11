@@ -89,9 +89,6 @@ backup_borg_ssh_key_private: |
 
 **Note**: `REPO` will be initialized on backup start, for example: `matrix`. See [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls) for the syntax.
 
-
-To backup without encryption, add `backup_borg_encryption: 'none'` to your vars. This will also enable the `backup_borg_unknown_unencrypted_repo_access_is_ok` variable.
-
 `backup_borg_location_source_directories` defines the list of directories to back up.
 You might want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable.
 
