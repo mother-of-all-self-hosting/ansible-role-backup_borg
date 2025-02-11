@@ -1,3 +1,13 @@
+<!--
+SPDX-FileCopyrightText: 2022 - 2025 Nikita Chernyi
+SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022 MDAD project contributors
+SPDX-FileCopyrightText: 2022 - 2023 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+
 # Setting up borg backup
 
 This role can install and configure [borgbackup](https://www.borgbackup.org/) with [borgmatic](https://torsion.org/borgmatic/) for you.
@@ -8,7 +18,7 @@ You will need a remote server where borg will store the backups. There are hoste
 
 The backup will run based on `backup_borg_schedule` var (systemd timer calendar), default: 4am every day.
 
-For some playbooks the with an integrated Postgres database server Borg backups will also include dumps of your Postgres database. 
+For some playbooks the with an integrated Postgres database server Borg backups will also include dumps of your Postgres database.
 An alternative solution for backing up the Postgres database is [postgres backup](https://github.com/devture/com.devture.ansible.role.postgres_backup).
 If you decide to go with another solution, you can disable Postgres-backup support for Borg using the `backup_borg_postgresql_enabled` variable.
 
