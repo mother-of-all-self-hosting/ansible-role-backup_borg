@@ -26,7 +26,7 @@ For some playbooks, if you're using the integrated Postgres database server, bac
 
 Unless you disable the Postgres-backup support, make sure that the Postgres version of your homeserver's database is compatible with borgmatic. You can check the compatible versions [here](../defaults/main.yml).
 
-An alternative solution for backing up the Postgres database is [postgres backup](https://github.com/devture/com.devture.ansible.role.postgres_backup). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
+An alternative solution for backing up the Postgres database is [postgres backup](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
 
 ### Create a new SSH key
 
@@ -56,7 +56,9 @@ The **private** key needs to be added to `backup_borg_ssh_key_private` on your `
 
 ## Adjusting the playbook configuration
 
-To enable BorgBackup, add the following configuration to your `vars.yml` file (adapt to your needs):
+To enable BorgBackup, add the following configuration to your `vars.yml` file (adapt to your needs).
+
+**Note**: the path should be something like `inventory/host_vars/matrix.example.com/vars.yml` when you use the [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) Ansible playbook.
 
 ```yaml
 backup_borg_enabled: true
@@ -133,7 +135,13 @@ Take a look at:
 
 ## Installing
 
-After configuring the playbook, run the installation command of your playbook again.
+After configuring the playbook, run the installation command of your playbook as below:
+
+```sh
+ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
+```
+
+If you use the [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) or [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) Ansible playbook, the shortcut commands with the [`just` program](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/just.md) are also available: `just install-all` or `just setup-all`
 
 ## Usage
 
