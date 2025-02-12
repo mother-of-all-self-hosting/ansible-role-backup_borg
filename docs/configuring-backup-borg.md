@@ -147,7 +147,7 @@ If you use the [mash-playbook](https://github.com/mother-of-all-self-hosting/mas
 
 After installation, `backup-borg` will run automatically every day at `04:00:00` (as defined in `backup_borg_schedule` by default).
 
-## Manually start a backup
+### Manually start the task
 
 Sometimes it can be helpful to run the backup as you'd like, avoiding to wait until 4 a.m., like when you test your configuration.
 
