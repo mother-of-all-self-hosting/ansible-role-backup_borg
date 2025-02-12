@@ -58,7 +58,7 @@ The **private** key needs to be added to `backup_borg_ssh_key_private` on your `
 
 To enable BorgBackup, add the following configuration to your `vars.yml` file (adapt to your needs).
 
-**Note**: the path should be something like `inventory/host_vars/matrix.example.com/vars.yml` when you use the [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) Ansible playbook.
+**Note**: the path should be something like `inventory/host_vars/matrix.example.com/vars.yml` if you use the [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) Ansible playbook.
 
 ```yaml
 backup_borg_enabled: true
