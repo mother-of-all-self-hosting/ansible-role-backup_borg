@@ -13,7 +13,7 @@ This role *implicitly* depends on:
 
 ## Usage
 
-💡 See the [document](docs/configure-backup-borg.md) for details about setting up BorgBackup.
+💡 See the [document](docs/configuring-backup-borg.md) for details about setting up the playbook.
 
 Example playbook:
 
@@ -74,19 +74,4 @@ backup_borg_systemd_required_services_list: |
     +
     ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
   }}
-```
-
-A user must set a configuration like this in their `vars.yml`
-```yaml
-backup_borg_enabled: true
-backup_borg_location_repositories:
- - ssh://user@host/./repo
-backup_borg_storage_encryption_passphrase: "verysecret"
-backup_borg_ssh_key_private: |
-  -----BEGIN OPENSSH PRIVATE KEY-----
-  ladlfjahfuinsjklydnhawfmf
-  adsjfajgiuhesrgadsjfahfuihaewuighf
-  adfnkajfkstrhguihewzgkgbkgtrjguishg
-  asdjfioghuifskermvbsjfhawuifui
-  -----END OPENSSH PRIVATE KEY-----
 ```
