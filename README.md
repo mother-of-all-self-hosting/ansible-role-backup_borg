@@ -23,7 +23,7 @@ This role *implicitly* depends on:
 
 ## Usage
 
-💡 See the [document](docs/configuring-backup-borg.md) for details about setting up the playbook.
+💡 See this [document](docs/configuring-backup-borg.md) for details about setting up BorgBackup with this role.
 
 Example playbook:
 
