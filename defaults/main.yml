@@ -58,7 +58,7 @@ backup_borg_schedule_randomized_delay_sec: 2h
 # what directories should be added to backup
 backup_borg_location_source_directories: []
 
-# postgres db backup
+# Postgres db backup
 backup_borg_postgresql_enabled: true
 backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16', '17']
 backup_borg_postgresql_databases: []
