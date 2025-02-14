@@ -26,7 +26,7 @@ For some playbooks, if you're using the integrated Postgres database server, bac
 
 Unless you disable the Postgres-backup support, make sure that the Postgres version of your homeserver's database is compatible with borgmatic. You can check the compatible versions [here](../defaults/main.yml).
 
-An alternative solution for backing up the Postgres database is [postgres backup](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
+An alternative solution for backing up the Postgres database is [Postgres backup](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
 
 ### Create a new SSH key
 
@@ -61,6 +61,12 @@ To enable BorgBackup, add the following configuration to your `vars.yml` file (a
 **Note**: the path should be something like `inventory/host_vars/matrix.example.com/vars.yml` if you use the [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) Ansible playbook.
 
 ```yaml
+########################################################################
+#                                                                      #
+# backup_borg                                                          #
+#                                                                      #
+########################################################################
+
 backup_borg_enabled: true
 
 # Set the repository location, where:
@@ -83,6 +89,12 @@ backup_borg_ssh_key_private: |
   RydWQgZXhlcmNpdGF0aW9uIHVsbGFtY28gbGFib3JpcyBuaXNpIHV0IGFsaXF1aXAgZXgg
   ZWEgY29tbW9kbyBjb25zZXF1YXQuIA==
   -----END OPENSSH PRIVATE KEY-----
+
+########################################################################
+#                                                                      #
+# backup_borg                                                          #
+#                                                                      #
+########################################################################
 ```
 
 **Note**: `REPO` will be initialized on backup start, for example: `matrix`. See [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls) for the syntax.
