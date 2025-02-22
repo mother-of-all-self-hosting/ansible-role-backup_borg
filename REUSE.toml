@@ -11,3 +11,12 @@ path = [
 ]
 SPDX-FileCopyrightText = "NONE"
 SPDX-License-Identifier = "CC0-1.0"
+
+# Apparently not parsed correctly for some reason …
+[[annotations]]
+path = ["templates/config.yaml.j2"]
+SPDX-FileCopyrightText = [
+  "2023 Julian-Samuel Gebühr",
+  "2023 - 2024 Nikita Chernyi"
+]
+SPDX-License-Identifier = "AGPL-3.0-or-later"
