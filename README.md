@@ -33,7 +33,7 @@ Example playbook:
     - role: galaxy/com.devture.ansible.role.systemd_docker_base
 
     # This role is not required. We just use it in our example.
-    - role: galaxy/com.devture.ansible.role.postgres
+    - role: galaxy/postgres
 
     - role: galaxy/ansible.role.backup_borg
 
@@ -43,9 +43,9 @@ Example playbook:
 Example playbook configuration (`group_vars/servers` or other):
 
 ```yaml
-# The configuration below wires the backup-borg role with `com.devture.ansible.role.postgres` (`devture_postgres_*`).
-# This is just an example, however. You can use this backup borg role without it.
-# See: https://github.com/devture/com.devture.ansible.role.postgres
+# The configuration below wires the backup-borg role with the MASH/Postgres role (https://github.com/mother-of-all-self-hosting/ansible-role-postgres)
+# This is just an example, however.
+# You can use this backup borg role without it Postgres integration or with another Postgres instance.
 
 backup_borg_enabled: false
 
@@ -58,30 +58,28 @@ backup_borg_uid: "{{ my_uid }}"
 backup_borg_gid: "{{ my_gid }}"
 
 # We assume Postgres is installed via the `com.devture.ansible.role.postgres` role.
-# Remove this and any `devture_postgres_*` reference below, if that's not the case.
-backup_borg_postgresql_version_detection_devture_postgres_role_name: galaxy/com.devture.ansible.role.postgres
+# Remove this and any `postgres_*` reference below, if that's not the case.
+backup_borg_postgresql_version_detection_postgres_role_name: galaxy/com.devture.ansible.role.postgres
 
 # If you will use this without `com.devture.ansible.role.postgres`, you'll need to set the major Postgres version manually instead.
 # backup_borg_postgres_version: 15
 
-backup_borg_container_network: "{{ devture_postgres_container_network if devture_postgres_enabled else backup_borg_identifier }}"
+backup_borg_container_network: "{{ postgres_container_network if postgres_enabled else backup_borg_identifier }}"
 
 backup_borg_container_image_self_build: "{{ architecture not in ['amd64', 'arm32', 'arm64'] }}"
 
-backup_borg_postgresql_enabled: "{{ devture_postgres_enabled }}"
-backup_borg_postgresql_databases_hostname: "{{ devture_postgres_connection_hostname if devture_postgres_enabled else '' }}"
-backup_borg_postgresql_databases_username: "{{ devture_postgres_connection_username if devture_postgres_enabled else '' }}"
-backup_borg_postgresql_databases_password: "{{ devture_postgres_connection_password if devture_postgres_enabled else '' }}"
-backup_borg_postgresql_databases_port: "{{ devture_postgres_connection_port if devture_postgres_enabled else 5432 }}"
-backup_borg_postgresql_databases: "{{ devture_postgres_managed_databases | map(attribute='name') if devture_postgres_enabled else [] }}"
+backup_borg_postgresql_enabled: "{{ postgres_enabled }}"
+backup_borg_postgresql_databases_hostname: "{{ postgres_connection_hostname if postgres_enabled else '' }}"
+backup_borg_postgresql_databases_username: "{{ postgres_connection_username if postgres_enabled else '' }}"
+backup_borg_postgresql_databases_password: "{{ postgres_connection_password if postgres_enabled else '' }}"
+backup_borg_postgresql_databases_port: "{{ postgres_connection_port if postgres_enabled else 5432 }}"
+backup_borg_postgresql_databases: "{{ postgres_managed_databases | map(attribute='name') if postgres_enabled else [] }}"
 
 backup_borg_location_source_directories:
   - "{{ my_data_path }}"
 
-backup_borg_systemd_required_services_list: |
+backup_borg_systemd_required_services_list_auto: |
   {{
-    ['docker.service']
-    +
-    ([devture_postgres_identifier ~ '.service'] if devture_postgres_enabled else [])
+    ([postgres_identifier ~ '.service'] if postgres_enabled else [])
   }}
 ```
