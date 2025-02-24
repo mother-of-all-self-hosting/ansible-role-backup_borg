@@ -19,6 +19,8 @@ SPDX-FileCopyrightText = [
   "2023 Julian-Samuel Gebühr",
   "2023 - 2024 Nikita Chernyi"
 ]
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
 # See https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/issues/15
 [[annotations]]
 path = ["templates/sshkey.j2"]
