@@ -34,8 +34,10 @@ backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_
 backup_borg_postgres_version: ""
 backup_borg_borg_version: 1.4.0
 backup_borg_borgmatic_version: 1.9.10
-backup_borg_docker_image: "{{ backup_borg_docker_image_name_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
-backup_borg_docker_image_name_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else 'ghcr.io/' }}"
+backup_borg_docker_image: "{{ backup_borg_docker_image_registry_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
+backup_borg_docker_image_registry_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else backup_borg_docker_image_registry_prefix_upstream }}"
+backup_borg_docker_image_registry_prefix_upstream: "{{ backup_borg_docker_image_registry_prefix_upstream_default }}"
+backup_borg_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') }}"
 
 # container tmp directory size
