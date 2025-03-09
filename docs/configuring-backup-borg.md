@@ -58,7 +58,7 @@ The **private** key needs to be added to `backup_borg_ssh_key_private` on your `
 
 To enable BorgBackup, add the following configuration to your `vars.yml` file (adapt to your needs).
 
-**Note**: the path should be something like `inventory/host_vars/matrix.example.com/vars.yml` if you use the [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) Ansible playbook.
+**Note**: the path should be something like `inventory/host_vars/matrix.example.com/vars.yml` if you use the [matrix-docker-ansible-deploy (MDAD)](https://github.com/spantaleev/matrix-docker-ansible-deploy) or [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting/mash-playbook) Ansible playbook.
 
 ```yaml
 ########################################################################
@@ -153,7 +153,7 @@ After configuring the playbook, run the installation command of your playbook as
 ansible-playbook -i inventory/hosts setup.yml --tags=setup-all,start
 ```
 
-If you use the [mash-playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) or [matrix-docker-ansible-deploy](https://github.com/spantaleev/matrix-docker-ansible-deploy) Ansible playbook, the shortcut commands with the [`just` program](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/just.md) are also available: `just install-all` or `just setup-all`
+If you use the MDAD / MASH playbook, the shortcut commands with the [`just` program](https://github.com/spantaleev/matrix-docker-ansible-deploy/blob/master/docs/just.md) are also available: `just install-all` or `just setup-all`
 
 ## Usage
 
