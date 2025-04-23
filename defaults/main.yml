@@ -32,8 +32,8 @@ backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 # Also see the `backup_borg_postgresql_version_detection_*` variables.
 backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
 backup_borg_postgres_version: ""
-backup_borg_borg_version: 1.4.0
-backup_borg_borgmatic_version: 1.9.13
+backup_borg_borg_version: 1.4.1
+backup_borg_borgmatic_version: 1.9.14
 backup_borg_docker_image: "{{ backup_borg_docker_image_registry_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
 backup_borg_docker_image_registry_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else backup_borg_docker_image_registry_prefix_upstream }}"
 backup_borg_docker_image_registry_prefix_upstream: "{{ backup_borg_docker_image_registry_prefix_upstream_default }}"
