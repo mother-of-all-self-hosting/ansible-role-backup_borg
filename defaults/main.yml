@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-# Project source code URL: https://gitlab.com/etke.cc/borgmatic
+# Project source code URL: https://github.com/etkecc/borgmatic
 
 backup_borg_enabled: true
 
