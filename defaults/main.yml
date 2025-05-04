@@ -30,7 +30,6 @@ backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 
 # Image and Postgres version are determined automatically, based on the detected Postgres server version (if enabled), otherwise latest is used
 # Also see the `backup_borg_postgresql_version_detection_*` variables.
-# renovate: datasource=docker depName=ghcr.io/etkecc/borgmatic
 backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
 backup_borg_postgres_version: ""
 backup_borg_borg_version: 1.4.1
