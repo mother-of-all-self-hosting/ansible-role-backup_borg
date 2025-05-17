@@ -5,10 +5,11 @@
 
 ---
 
-- name: (Deprecation) Catch and report renamed backup-borg variables
+- name: (Deprecation) Catch and report renamed settings
   ansible.builtin.fail:
     msg: >-
-      The variable `{{ item.old }}` is deprecated. Please use `{{ item.new }}` instead.
+      Your configuration contains a variable, which now has a different name.
+      please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
   when: "item.old in vars"
   with_items:
     - {'old': 'backup_borg_docker_image_name_prefix', 'new': 'backup_borg_docker_image_registry_prefix'}
