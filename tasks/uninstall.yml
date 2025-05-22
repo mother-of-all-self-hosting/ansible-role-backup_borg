@@ -5,31 +5,31 @@
 
 ---
 
-- name: Check existence of BorgBackup service
+- name: Check existence of BorgBackup systemd service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.service"
   register: backup_borg_service_stat
 
 - when: backup_borg_service_stat.stat.exists | bool
   block:
-    - name: Ensure BorgBackup is stopped
+    - name: Ensure BorgBackup systemd service is stopped
       ansible.builtin.service:
         name: "{{ backup_borg_identifier }}"
         state: stopped
         enabled: false
         daemon_reload: true
 
-    - name: Ensure backup-borg.service doesn't exist
+    - name: Ensure BorgBackup systemd service does not exist
       ansible.builtin.file:
         path: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.service"
         state: absent
 
-    - name: Ensure backup-borg.timer doesn't exist
+    - name: Ensure BorgBackup timer does not exist
       ansible.builtin.file:
         path: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.timer"
         state: absent
 
-    - name: Ensure BorgBackup files are removed
+    - name: Ensure BorgBackup path does not exist
       ansible.builtin.file:
         path: "{{ backup_borg_base_path }}"
         state: absent
