@@ -14,7 +14,7 @@
   with_items:
     - {'old': 'backup_borg_docker_image_name_prefix', 'new': 'backup_borg_docker_image_registry_prefix'}
 
-- name: Fail if required backup-borg settings not defined
+- name: Fail if required BorgBackup settings not defined
   ansible.builtin.fail:
     msg: >-
       You need to define a required configuration setting (`{{ item.name }}`).

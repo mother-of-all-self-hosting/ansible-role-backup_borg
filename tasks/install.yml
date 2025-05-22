@@ -33,14 +33,14 @@
 
     - name: Fail if detected Postgres version is unsupported
       ansible.builtin.fail:
-        msg: "You cannot use borg backup with Postgres v{{ postgres_detected_version }}. If you are using an old Postgres version, consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql HOWEVER, if you are using a new Postgres version, there is a high chance that the version is not supported by borg backup yet (supported versions: {{ backup_borg_supported_postgres_versions }}). You can't do anything with that, details: https://github.com/etkecc/borgmatic/pull/1"
+        msg: "You cannot use BorgBackup with Postgres v{{ postgres_detected_version }}. If you are using an old Postgres version, consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql HOWEVER, if you are using a new Postgres version, there is a high chance that the version is not supported by BorgBackup yet (supported versions: {{ backup_borg_supported_postgres_versions }}). You can't do anything with that, details: https://github.com/etkecc/borgmatic/pull/1"
       when: "postgres_detected_version not in backup_borg_supported_postgres_versions"
 
-    - name: Set the correct borg backup version to use
+    - name: Set the correct BorgBackup version to use
       ansible.builtin.set_fact:
         backup_borg_postgres_version: "{{ postgres_detected_version }}"
 
-- name: Ensure borg docker data paths exist
+- name: Ensure BorgBackup docker data paths exist
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -52,7 +52,7 @@
     - "{{ backup_borg_config_path }}"
     - "{{ backup_borg_restore_path }}"
 
-- name: Ensure borg build paths exist
+- name: Ensure BorgBackup build paths exist
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -76,7 +76,7 @@
     group: "{{ backup_borg_gid }}"
     mode: 0750
 
-- name: Ensure borg passwd is created
+- name: Ensure BorgBackup passwd is created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/passwd.j2"
     dest: "{{ backup_borg_config_path }}/passwd"
@@ -84,7 +84,7 @@
     group: "{{ backup_borg_gid }}"
     mode: 0640
 
-- name: Ensure borg ssh key is created
+- name: Ensure BorgBackup ssh key is created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/sshkey.j2"
     dest: "{{ backup_borg_config_path }}/sshkey"
@@ -92,7 +92,7 @@
     group: "{{ backup_borg_gid }}"
     mode: 0600
 
-- name: Ensure borg image is pulled
+- name: Ensure BorgBackup image is pulled
   community.docker.docker_image:
     name: "{{ backup_borg_docker_image }}"
     source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
@@ -104,7 +104,7 @@
   delay: "{{ devture_playbook_help_container_retries_delay }}"
   until: result is not failed
 
-- name: Ensure borg repository is present on self-build
+- name: Ensure BorgBackup repository is present on self-build
   ansible.builtin.git:
     repo: "{{ backup_borg_docker_repo }}"
     version: "{{ backup_borg_docker_repo_version }}"
@@ -113,7 +113,7 @@
   register: backup_borg_git_pull_results
   when: "backup_borg_container_image_self_build | bool"
 
-- name: Ensure borg image is built
+- name: Ensure BorgBackup image is built
   community.docker.docker_image:
     name: "{{ backup_borg_docker_image }}"
     source: build
@@ -129,14 +129,14 @@
       pull: true
   when: "backup_borg_container_image_self_build | bool"
 
-- name: Ensure borg container network is created
+- name: Ensure BorgBackup container network is created
   community.general.docker_network:
     enable_ipv6: "{{ devture_systemd_docker_base_ipv6_enabled }}"
     name: "{{ backup_borg_container_network }}"
     driver: bridge
     driver_options: "{{ devture_systemd_docker_base_container_networks_driver_options }}"
 
-- name: Ensure backup-borg systemd service and timer are installed
+- name: Ensure BorgBackup systemd service and timer are installed
   ansible.builtin.template:
     src: "{{ role_path }}/templates/systemd/backup-borg.{{ item }}.j2"
     dest: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.{{ item }}"

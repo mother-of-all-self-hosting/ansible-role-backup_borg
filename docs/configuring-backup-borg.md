@@ -18,7 +18,7 @@ BorgBackup is a deduplicating backup program with optional compression and encry
 
 ### Set up a remote server for storing backups
 
-You will need a remote server where borg will store the backups. There are hosted, borg compatible solutions available, such as [BorgBase](https://www.borgbase.com).
+You will need a remote server where BorgBackup will store the backups. There are hosted, BorgBackup compatible solutions available, such as [BorgBase](https://www.borgbase.com).
 
 ### Check the Postgres version
 

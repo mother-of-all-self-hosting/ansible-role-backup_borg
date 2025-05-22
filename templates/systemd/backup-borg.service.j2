@@ -7,7 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 #}
 
 [Unit]
-Description=Borg Backup
+Description=BorgBackup
 {% for service in backup_borg_systemd_required_services_list %}
 Requires={{ service }}
 After={{ service }}
@@ -45,7 +45,7 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --n
 # owned by `backup_borg_username:backup_borg_username` on the filesystem.
 #
 # `/root` is mountes as temporary filesystem, because we're using `--read-only` and because
-# Borgmatic tries to write to at least a few paths under `/root` (`.config`, `.ssh`, `.borgmatic`).
+# borgmatic tries to write to at least a few paths under `/root` (`.config`, `.ssh`, `.borgmatic`).
 ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ backup_borg_identifier }} \
 			--log-driver=none \
 			--cap-drop=ALL \

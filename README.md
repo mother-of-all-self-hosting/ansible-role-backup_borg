@@ -43,9 +43,9 @@ Example playbook:
 Example playbook configuration (`group_vars/servers` or other):
 
 ```yaml
-# The configuration below wires the backup-borg role with the MASH/Postgres role (https://github.com/mother-of-all-self-hosting/ansible-role-postgres)
+# The configuration below wires the BorgBackup role with the MASH/Postgres role (https://github.com/mother-of-all-self-hosting/ansible-role-postgres)
 # This is just an example, however.
-# You can use this backup borg role without it Postgres integration or with another Postgres instance.
+# You can use this BorgBackup role without it Postgres integration or with another Postgres instance.
 
 backup_borg_enabled: false
 
