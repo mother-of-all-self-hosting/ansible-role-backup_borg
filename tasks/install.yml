@@ -84,7 +84,7 @@
     group: "{{ backup_borg_gid }}"
     mode: 0640
 
-- name: Ensure BorgBackup ssh key is created
+- name: Ensure BorgBackup SSH key is created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/sshkey.j2"
     dest: "{{ backup_borg_config_path }}/sshkey"

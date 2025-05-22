@@ -47,8 +47,8 @@ If you are using a hosted solution, follow their instructions. If you have your 
 ```sh
 # Example to append the new PUBKEY contents, where:
 # - PUBKEY is path to the public key
-# - USER is a ssh user on a provider / server
-# - HOST is a ssh host of a provider / server
+# - USER is a SSH user on a provider / server
+# - HOST is a SSH host of a provider / server
 cat PUBKEY | ssh USER@HOST 'dd of=.ssh/authorized_keys oflag=append conv=notrunc'
 ```
 
@@ -70,8 +70,8 @@ To enable BorgBackup, add the following configuration to your `vars.yml` file (a
 backup_borg_enabled: true
 
 # Set the repository location, where:
-# - USER is a ssh user on a provider / server
-# - HOST is a ssh host of a provider / server
+# - USER is a SSH user on a provider / server
+# - HOST is a SSH host of a provider / server
 # - REPO is a BorgBackup repository name
 backup_borg_location_repositories:
  - ssh://USER@HOST/./REPO
