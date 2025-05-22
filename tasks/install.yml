@@ -60,7 +60,7 @@
   with_items:
     - "{{ backup_borg_docker_src_files_path }}"
 
-- name: Ensure borgmatic config is created
+- name: Ensure borgmatic configuration file installed
   ansible.builtin.copy:
     content: "{{ backup_borg_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ backup_borg_config_path }}/config.yaml"
