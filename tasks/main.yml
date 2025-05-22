@@ -5,21 +5,26 @@
 
 ---
 
-- block:
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
-      when: "backup_borg_enabled | bool"
+- name: Perform BorgBackup installation tasks
+  block:
+    - name: Validate BorgBackup configuration
+      when: backup_borg_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/validate_config.yml"
 
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
-      when: "backup_borg_enabled | bool"
+    - name: Install BorgBackup
+      when: backup_borg_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/install.yml"
   tags:
     - setup-all
     - setup-backup-borg
     - install-all
     - install-backup-borg
 
-- block:
-    - ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
-      when: "not backup_borg_enabled | bool"
+- name: Perform BorgBackup uninstallation tasks
+  block:
+    - name: Uninstall BorgBackup
+      when: not backup_borg_enabled | bool
+      ansible.builtin.include_tasks: "{{ role_path }}/tasks/uninstall.yml"
   tags:
     - setup-all
     - setup-backup-borg
