@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
 - name: (Deprecation) Catch and report renamed settings
   ansible.builtin.fail:
     msg: >-
@@ -12,7 +11,7 @@
       please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
   when: "item.old in vars"
   with_items:
-    - {'old': 'backup_borg_docker_image_name_prefix', 'new': 'backup_borg_docker_image_registry_prefix'}
+    - { "old": "backup_borg_docker_image_name_prefix", "new": "backup_borg_docker_image_registry_prefix" }
 
 - name: Fail if required BorgBackup settings not defined
   ansible.builtin.fail:
@@ -20,12 +19,12 @@
       You need to define a required configuration setting (`{{ item.name }}`).
   when: "item.when | bool and vars[item.name] == ''"
   with_items:
-    - {'name': 'backup_borg_ssh_key_private', when: true}
-    - {'name': 'backup_borg_location_repositories', when: true}
-    - {'name': 'backup_borg_uid', when: true}
-    - {'name': 'backup_borg_gid', when: true}
-    - {'name': 'backup_borg_container_network', when: true}
-    - {'name': 'backup_borg_postgresql_databases_hostname', when: "{{ backup_borg_postgresql_enabled }}"}
+    - { "name": "backup_borg_ssh_key_private", when: true }
+    - { "name": "backup_borg_location_repositories", when: true }
+    - { "name": "backup_borg_uid", when: true }
+    - { "name": "backup_borg_gid", when: true }
+    - { "name": "backup_borg_container_network", when: true }
+    - { "name": "backup_borg_postgresql_databases_hostname", when: "{{ backup_borg_postgresql_enabled }}" }
 
 - name: Fail if encryption passphrase is undefined unless repository is unencrypted
   ansible.builtin.fail:

@@ -83,3 +83,9 @@ backup_borg_systemd_required_services_list_auto: |
     ([postgres_identifier ~ '.service'] if postgres_enabled else [])
   }}
 ```
+
+## Development
+
+You can optionally install [pre-commit](https://pre-commit.com/) so that simple mistakes are checked and noticed before changes are pushed to a remote branch. See [`.pre-commit-config.yaml`](./.pre-commit-config.yaml) for which hooks are to be executed.
+
+See [this section](https://pre-commit.com/#usage) on the official documentation for usage.

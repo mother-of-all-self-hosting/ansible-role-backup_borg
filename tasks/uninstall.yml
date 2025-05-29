@@ -4,13 +4,13 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 ---
-
 - name: Check existence of BorgBackup systemd service
   ansible.builtin.stat:
     path: "{{ devture_systemd_docker_base_systemd_path }}/{{ backup_borg_identifier }}.service"
   register: backup_borg_service_stat
 
-- when: backup_borg_service_stat.stat.exists | bool
+- name: Uninstall BorgBackup systemd services and files
+  when: backup_borg_service_stat.stat.exists | bool
   block:
     - name: Ensure BorgBackup systemd service is stopped
       ansible.builtin.service:

@@ -24,7 +24,7 @@ You will need a remote server where BorgBackup will store the backups. There are
 
 For some playbooks, if you're using the integrated Postgres database server, backups with BorgBackup will also include dumps of your Postgres database by default.
 
-Unless you disable the Postgres-backup support, make sure that the Postgres version of your homeserver's database is compatible with borgmatic. You can check the compatible versions [here](../defaults/main.yml).
+Unless you disable the Postgres-backup support, make sure that the Postgres version of your homeserver's database is compatible with borgmatic. You can check the compatible versions on [`defaults/main.yml`](../defaults/main.yml).
 
 An alternative solution for backing up the Postgres database is [Postgres backup](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
 
@@ -129,7 +129,7 @@ To edit the schedule, add the following configuration to your `vars.yml` file (a
 backup_borg_schedule: "*-*-* 04:00:00"
 ```
 
-**Note**: the actual job may run with a delay. See `backup_borg_schedule_randomized_delay_sec` [here](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/f5d5b473d48c6504be10b3d946255ef5c186c2a6/defaults/main.yml#L50) for its default value.
+**Note**: the actual job may run with a delay. See `backup_borg_schedule_randomized_delay_sec` on [`defaults/main.yml`](https://github.com/mother-of-all-self-hosting/ansible-role-backup_borg/blob/f5d5b473d48c6504be10b3d946255ef5c186c2a6/defaults/main.yml#L50) for its default value.
 
 ### Set include and/or exclude directories (optional)
 
