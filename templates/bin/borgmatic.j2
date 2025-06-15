@@ -7,21 +7,21 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 #!/usr/bin/env bash
 
 {{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ backup_borg_identifier }} \
-		--log-driver=none \
-		--cap-drop=ALL \
-		--cap-add=CAP_DAC_OVERRIDE \
-		--read-only \
-		--network={{ backup_borg_container_network }} \
-		--tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
-		--tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
-		--mount type=bind,src={{ backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
-		--mount type=bind,src={{ backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
-		--mount type=bind,src={{ backup_borg_restore_path }},dst=/restore \
-		{% for source in backup_borg_location_source_directories %}
-		--mount type=bind,src={{ source }},dst={{ source }},ro \
-		{% endfor %}
-		{% for arg in backup_borg_container_extra_arguments %}
-		{{ arg }} \
-		{% endfor %}
-		{{ backup_borg_docker_image }} \
-		borgmatic "$@"
+    --log-driver=none \
+    --cap-drop=ALL \
+    --cap-add=CAP_DAC_OVERRIDE \
+    --read-only \
+    --network={{ backup_borg_container_network }} \
+    --tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
+    --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
+    --mount type=bind,src={{ backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
+    --mount type=bind,src={{ backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
+    --mount type=bind,src={{ backup_borg_restore_path }},dst=/restore \
+    {% for source in backup_borg_location_source_directories %}
+    --mount type=bind,src={{ source }},dst={{ source }},ro \
+    {% endfor %}
+    {% for arg in backup_borg_container_extra_arguments %}
+    {{ arg }} \
+    {% endfor %}
+    {{ backup_borg_docker_image }} \
+    borgmatic "$@"
