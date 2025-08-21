@@ -90,8 +90,22 @@ backup_borg_postgresql_version_detection_enabled: "{{ backup_borg_postgresql_ver
 # This role is invoked to determine the Postgres version, unless you have set `backup_borg_version` manually.
 backup_borg_postgresql_version_detection_postgres_role_name: ''
 
+# MySQL db backup
 backup_borg_mysql_enabled: true
-backup_borg_mysql_databases: []
+
+# backup_borg_databases contains a list of database names to back up
+# DO NOT set this variable directly, instead use backup_borg_mysql_databases_auto or backup_borg_mysql_databases_custom
+backup_borg_mysql_databases: "{{ backup_borg_mysql_databases_auto + backup_borg_mysql_databases_custom }}"
+
+# The variable backup_borg_mysql_databases_auto can be used by playbooks to automatically set the databases to back up
+# E.g. the mash-playbook automatically sets up postgres databases for services that need them.
+# It therefore makes sense to automatically add them to this variable.
+backup_borg_mysql_databases_auto: []
+
+# backup_borg_mysql_databases_custom is there if you want to manually add databases to the backup
+# e.g. because their setup is not controlled by ansible
+backup_borg_mysql_databases_custom: []
+
 backup_borg_mysql_databases_hostname: ''
 backup_borg_mysql_databases_username: "{{ backup_borg_identifier }}"
 backup_borg_mysql_databases_password: ""
