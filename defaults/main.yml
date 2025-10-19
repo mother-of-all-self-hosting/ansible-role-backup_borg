@@ -65,7 +65,11 @@ backup_borg_schedule: "*-*-* 04:00:00"
 backup_borg_schedule_randomized_delay_sec: 2h
 
 # what directories should be added to backup
-backup_borg_location_source_directories: []
+backup_borg_location_source_directories: "{{ backup_borg_location_source_directories_auto + backup_borg_location_source_directories_custom }}"
+# _auto can be used to be automatically populated by playbooks
+backup_borg_location_source_directories_auto: []
+# _custom can be used to specify additional directories
+backup_borg_location_source_directories_custom: []
 
 # Postgres db backup
 backup_borg_postgresql_enabled: true
