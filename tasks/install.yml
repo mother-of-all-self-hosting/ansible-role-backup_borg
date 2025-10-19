@@ -144,6 +144,7 @@
             POSTGRES_VERSION: "{{ backup_borg_postgres_version }}"
             BORG_VERSION: "{{ backup_borg_borg_version }}"
             BORGMATIC_VERSION: "{{ backup_borg_borgmatic_version }}"
+            ALPINE_VERSION: "{{ backup_borg_alpine_version }}"
 
 - name: Ensure BorgBackup container network is created via community.docker.docker_network
   when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
