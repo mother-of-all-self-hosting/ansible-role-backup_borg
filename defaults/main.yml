@@ -124,6 +124,11 @@ backup_borg_mysql_databases_port: 3306
 # Setting a healthchecks ping URL will make borgmatic ping your Healthchecks project when a backup begins, ends, or errors
 # See: https://torsion.org/borgmatic/docs/how-to/monitor-your-backups/#healthchecks-hook
 backup_borg_healthchecks_ping_url: ''
+# possible states to ping
+backup_borg_healthchecks_states:
+  - start
+  - finish
+  - fail
 
 # target repositories
 backup_borg_location_repositories: []
