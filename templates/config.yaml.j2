@@ -59,7 +59,3 @@ mysql_databases:
   port: {{ backup_borg_mysql_databases_port | int | to_json }}
 {% endfor %}
 {% endif %}
-after_backup:
-  - echo "Backup created."
-on_error:
-  - echo "Error while creating a backup."
