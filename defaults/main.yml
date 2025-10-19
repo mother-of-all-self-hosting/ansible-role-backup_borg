@@ -72,6 +72,8 @@ backup_borg_location_source_directories_auto: []
 # _custom can be used to specify additional directories
 backup_borg_location_source_directories_custom: []
 
+backup_borg_location_remote_path: ""
+
 # Postgres db backup
 backup_borg_postgresql_enabled: true
 backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16', '17']
