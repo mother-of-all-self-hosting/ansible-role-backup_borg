@@ -31,16 +31,16 @@
 
     - name: Output detected Postgres version
       ansible.builtin.debug:
-        msg: "Detected Postgres version: {{ postgres_detected_version }}"
+        msg: "Detected Postgres version: {{ postgres_detected_version_string }}"
 
     - name: Fail if detected Postgres version is unsupported
       ansible.builtin.fail:
-        msg: "You cannot use BorgBackup with Postgres v{{ postgres_detected_version }}. If you are using an old Postgres version, consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql HOWEVER, if you are using a new Postgres version, there is a high chance that the version is not supported by BorgBackup yet (supported versions: {{ backup_borg_supported_postgres_versions }}). You can't do anything with that, details: https://github.com/etkecc/borgmatic/pull/1"
-      when: "postgres_detected_version not in backup_borg_supported_postgres_versions"
+        msg: "You cannot use BorgBackup with Postgres v{{ postgres_detected_version_string }}. If you are using an old Postgres version, consider upgrading - link to docs for upgrading Postgres: docs/maintenance-postgres.md#upgrading-postgresql HOWEVER, if you are using a new Postgres version, there is a high chance that the version is not supported by BorgBackup yet (supported versions: {{ backup_borg_supported_postgres_versions }}). You can't do anything with that, details: https://github.com/etkecc/borgmatic/pull/1"
+      when: "postgres_detected_version_string not in backup_borg_supported_postgres_versions"
 
     - name: Set the correct BorgBackup version to use
       ansible.builtin.set_fact:
-        backup_borg_postgres_version: "{{ postgres_detected_version }}"
+        backup_borg_postgres_version: "{{ postgres_detected_version_string }}"
 
 - name: Ensure BorgBackup docker data paths exist
   ansible.builtin.file:
