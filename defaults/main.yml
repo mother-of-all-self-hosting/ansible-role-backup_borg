@@ -76,7 +76,7 @@ backup_borg_location_remote_path: ""
 
 # Postgres db backup
 backup_borg_postgresql_enabled: true
-backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16', '17']
+backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16', '17', '18']
 
 # backup_borg_databases contains a list of database names to back up
 # DO NOT set this variable directly, instead use backup_borg_postgresql_databases_auto or backup_borg_postgresql_databases_custom
