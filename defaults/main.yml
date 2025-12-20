@@ -45,7 +45,9 @@ backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':lat
 backup_borg_container_tmp_size: 4096m
 
 # A list of extra arguments to pass to the container
-backup_borg_container_extra_arguments: []
+backup_borg_container_extra_arguments: "{{ backup_borg_container_extra_arguments_auto + backup_borg_container_extra_arguments_custom }}"
+backup_borg_container_extra_arguments_auto: []
+backup_borg_container_extra_arguments_custom: []
 
 # List of systemd services that the BorgBackup systemd service depends on
 backup_borg_systemd_required_services_list: "{{ backup_borg_systemd_required_services_list_default + backup_borg_systemd_required_services_list_auto + backup_borg_systemd_required_services_list_custom }}"
