@@ -93,14 +93,14 @@ backup_borg_postgresql_databases_auto: []
 # e.g. because their setup is not controlled by ansible
 backup_borg_postgresql_databases_custom: []
 
-backup_borg_postgresql_databases_hostname: ''
+backup_borg_postgresql_databases_hostname: ""
 backup_borg_postgresql_databases_username: "{{ backup_borg_identifier }}"
 backup_borg_postgresql_databases_password: ""
 backup_borg_postgresql_databases_port: 5432
 backup_borg_postgresql_version_detection_enabled: "{{ backup_borg_postgresql_version_detection_postgres_role_name != '' }}"
 # backup_borg_postgresql_version_detection_postgres_role_name lets you control the role name, leading to the com.devture.ansible.role.postgres.
 # This role is invoked to determine the Postgres version, unless you have set `backup_borg_version` manually.
-backup_borg_postgresql_version_detection_postgres_role_name: ''
+backup_borg_postgresql_version_detection_postgres_role_name: ""
 
 # MySQL db backup
 backup_borg_mysql_enabled: true
@@ -118,14 +118,14 @@ backup_borg_mysql_databases_auto: []
 # e.g. because their setup is not controlled by ansible
 backup_borg_mysql_databases_custom: []
 
-backup_borg_mysql_databases_hostname: ''
+backup_borg_mysql_databases_hostname: ""
 backup_borg_mysql_databases_username: "{{ backup_borg_identifier }}"
 backup_borg_mysql_databases_password: ""
 backup_borg_mysql_databases_port: 3306
 
 # Setting a healthchecks ping URL will make borgmatic ping your Healthchecks project when a backup begins, ends, or errors
 # See: https://torsion.org/borgmatic/docs/how-to/monitor-your-backups/#healthchecks-hook
-backup_borg_healthchecks_ping_url: ''
+backup_borg_healthchecks_ping_url: ""
 # possible states to ping
 backup_borg_healthchecks_states:
   - start
