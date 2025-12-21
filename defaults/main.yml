@@ -44,7 +44,7 @@ backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':lat
 # container tmp directory size
 backup_borg_container_tmp_size: 4096m
 
-# A list of extra arguments to pass to the container
+# A list of extra arguments to pass to the container (`docker create` command)
 backup_borg_container_extra_arguments: "{{ backup_borg_container_extra_arguments_auto + backup_borg_container_extra_arguments_custom }}"
 backup_borg_container_extra_arguments_auto: []
 backup_borg_container_extra_arguments_custom: []
