@@ -66,9 +66,9 @@
   ansible.builtin.copy:
     content: "{{ backup_borg_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ backup_borg_config_path }}/config.yaml"
+    mode: "0640"
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
-    mode: "0640"
 
 - name: Ensure borgmatic script is created
   ansible.builtin.template:
@@ -82,9 +82,9 @@
   ansible.builtin.template:
     src: "{{ role_path }}/templates/passwd.j2"
     dest: "{{ backup_borg_config_path }}/passwd"
+    mode: "0640"
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
-    mode: "0640"
 
 - name: Ensure BorgBackup SSH key is created
   ansible.builtin.template:
