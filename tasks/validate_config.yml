@@ -11,6 +11,7 @@
       Please change your configuration to rename the variable (`{{ item.old }}` -> `{{ item.new }}`).
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
+    - { "old": "backup_borg_container_tmp_size", "new": "backup_borg_container_tmpfs_tmp_size" }
     - { "old": "backup_borg_docker_image_name_prefix", "new": "backup_borg_docker_image_registry_prefix" }
 
 - name: Fail if required BorgBackup settings not defined

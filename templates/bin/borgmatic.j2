@@ -12,14 +12,14 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     --cap-add=CAP_DAC_OVERRIDE \
     --read-only \
     --network={{ backup_borg_container_network }} \
-    --tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
-    --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
     --mount type=bind,src={{ backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
     --mount type=bind,src={{ backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
     --mount type=bind,src={{ backup_borg_restore_path }},dst=/restore \
     {% for source in backup_borg_location_source_directories %}
     --mount type=bind,src={{ source }},dst={{ source }},ro \
     {% endfor %}
+    --tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmpfs_root_size }} \
+    --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmpfs_tmp_size }} \
     {% for arg in backup_borg_container_extra_arguments %}
     {{ arg }} \
     {% endfor %}

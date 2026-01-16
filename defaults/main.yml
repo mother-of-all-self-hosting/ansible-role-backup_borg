@@ -41,8 +41,9 @@ backup_borg_docker_image_registry_prefix_upstream: "{{ backup_borg_docker_image_
 backup_borg_docker_image_registry_prefix_upstream_default: "ghcr.io/"
 backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') }}"
 
-# container tmp directory size
-backup_borg_container_tmp_size: 4096m
+# Specify the size of the container's tmpfs volumes
+backup_borg_container_tmpfs_tmp_size: 4096m
+backup_borg_container_tmpfs_root_size: "{{ backup_borg_container_tmpfs_tmp_size }}"
 
 # A list of extra arguments to pass to the container (`docker create` command)
 backup_borg_container_extra_arguments: "{{ backup_borg_container_extra_arguments_auto + backup_borg_container_extra_arguments_custom }}"

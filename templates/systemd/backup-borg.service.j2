@@ -33,7 +33,7 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --n
       {% for source in backup_borg_location_source_directories %}
       --mount type=bind,src={{ source }},dst={{ source }},ro \
       {% endfor %}
-      --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
+      --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmpfs_tmp_size }} \
       {% for arg in backup_borg_container_extra_arguments %}
       {{ arg }} \
       {% endfor %}
@@ -57,8 +57,8 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
       {% for source in backup_borg_location_source_directories %}
       --mount type=bind,src={{ source }},dst={{ source }},ro \
       {% endfor %}
-      --tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
-      --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
+      --tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmpfs_root_size }} \
+      --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmpfs_tmp_size }} \
       {% for arg in backup_borg_container_extra_arguments %}
       {{ arg }} \
       {% endfor %}
