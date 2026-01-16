@@ -28,12 +28,12 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --n
       --read-only \
       --user={{ backup_borg_uid }}:{{ backup_borg_gid }} \
       --network={{ backup_borg_container_network }} \
-      --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
       --mount type=bind,src={{ backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
       --mount type=bind,src={{ backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
       {% for source in backup_borg_location_source_directories %}
       --mount type=bind,src={{ source }},dst={{ source }},ro \
       {% endfor %}
+      --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
       {% for arg in backup_borg_container_extra_arguments %}
       {{ arg }} \
       {% endfor %}
@@ -52,13 +52,13 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
       --cap-add=CAP_DAC_OVERRIDE \
       --read-only \
       --network={{ backup_borg_container_network }} \
-      --tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
-      --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
       --mount type=bind,src={{ backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
       --mount type=bind,src={{ backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
       {% for source in backup_borg_location_source_directories %}
       --mount type=bind,src={{ source }},dst={{ source }},ro \
       {% endfor %}
+      --tmpfs=/root:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
+      --tmpfs=/tmp:rw,noexec,nosuid,size={{ backup_borg_container_tmp_size }} \
       {% for arg in backup_borg_container_extra_arguments %}
       {{ arg }} \
       {% endfor %}
