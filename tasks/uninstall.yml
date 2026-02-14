@@ -35,6 +35,7 @@
       community.docker.docker_network:
         name: "{{ backup_borg_container_network }}"
         state: absent
+      register: backup_borg_network_deletion_result
 
     - name: Ensure BorgBackup container network does not exist via ansible.builtin.command
       when: devture_systemd_docker_base_container_network_creation_method == 'command'
@@ -42,8 +43,8 @@
         cmd: >-
           {{ devture_systemd_docker_base_host_command_docker }} network rm
           {{ backup_borg_container_network }}
-      register: network_deletion_result
-      changed_when: backup_borg_container_network in network_deletion_result.stdout
+      register: backup_borg_network_deletion_result
+      changed_when: backup_borg_container_network in backup_borg_network_deletion_result.stdout
 
     - name: Ensure BorgBackup path does not exist
       ansible.builtin.file:
