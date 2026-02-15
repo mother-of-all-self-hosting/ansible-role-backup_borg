@@ -21,7 +21,11 @@ backup_borg_bin_path: "{{ backup_borg_base_path }}/bin"
 backup_borg_config_path: "{{ backup_borg_base_path }}/config"
 backup_borg_restore_path: "{{ backup_borg_base_path }}/restored"
 
+# The base container network. It will be auto-created by this role if it doesn't exist already.
 backup_borg_container_network: "{{ backup_borg_identifier }}"
+
+# Control if the container network is deleted on uninstalling.
+backup_borg_container_network_deletion_enabled: true
 
 backup_borg_container_image_self_build: false
 backup_borg_docker_repo: "https://github.com/etkecc/borgmatic"
