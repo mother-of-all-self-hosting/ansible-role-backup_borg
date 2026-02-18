@@ -60,7 +60,7 @@
     state: directory
     mode: "0750"
   with_items:
-    - "{{ backup_borg_docker_src_files_path }}"
+    - "{{ backup_borg_container_src_files_path }}"
 
 - name: Ensure borgmatic configuration file installed
   ansible.builtin.copy:
@@ -100,10 +100,10 @@
     - name: Ensure BorgBackup container image is pulled via community.docker.docker_image
       when: devture_systemd_docker_base_container_image_pull_method == 'ansible-module'
       community.docker.docker_image:
-        name: "{{ backup_borg_docker_image }}"
+        name: "{{ backup_borg_container_image }}"
         source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
-        force_source: "{{ backup_borg_docker_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
-        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else backup_borg_docker_image_force_pull }}"
+        force_source: "{{ backup_borg_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
+        force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else backup_borg_container_image_force_pull }}"
       register: result
       retries: "{{ devture_playbook_help_container_retries_count }}"
       delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -112,7 +112,7 @@
     - name: Ensure BorgBackup container image is pulled via ansible.builtin.command
       when: devture_systemd_docker_base_container_image_pull_method == 'command'
       ansible.builtin.command:
-        cmd: "{{ devture_systemd_docker_base_host_command_docker }} pull {{ backup_borg_docker_image }}"
+        cmd: "{{ devture_systemd_docker_base_host_command_docker }} pull {{ backup_borg_container_image }}"
       register: result
       retries: "{{ devture_playbook_help_container_retries_count }}"
       delay: "{{ devture_playbook_help_container_retries_delay }}"
@@ -124,21 +124,21 @@
   block:
     - name: Ensure BorgBackup repository is present on self-build
       ansible.builtin.git:
-        repo: "{{ backup_borg_docker_repo }}"
-        version: "{{ backup_borg_docker_repo_version }}"
-        dest: "{{ backup_borg_docker_src_files_path }}"
+        repo: "{{ backup_borg_container_repo }}"
+        version: "{{ backup_borg_container_repo_version }}"
+        dest: "{{ backup_borg_container_src_files_path }}"
         force: "yes"
       register: backup_borg_git_pull_results
 
     - name: Ensure BorgBackup container image is built
       community.docker.docker_image:
-        name: "{{ backup_borg_docker_image }}"
+        name: "{{ backup_borg_container_image }}"
         source: build
         force_source: "{{ backup_borg_git_pull_results.changed if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else backup_borg_git_pull_results.changed }}"
         build:
           dockerfile: Dockerfile
-          path: "{{ backup_borg_docker_src_files_path }}"
+          path: "{{ backup_borg_container_src_files_path }}"
           pull: true
           args:
             POSTGRES_VERSION: "{{ backup_borg_postgres_version }}"

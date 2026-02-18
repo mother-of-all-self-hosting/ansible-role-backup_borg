@@ -23,5 +23,5 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     {% for arg in backup_borg_container_extra_arguments %}
     {{ arg }} \
     {% endfor %}
-    {{ backup_borg_docker_image }} \
+    {{ backup_borg_container_image }} \
     borgmatic "$@"

@@ -28,9 +28,9 @@ backup_borg_container_network: "{{ backup_borg_identifier }}"
 backup_borg_container_network_deletion_enabled: true
 
 backup_borg_container_image_self_build: false
-backup_borg_docker_repo: "https://github.com/etkecc/borgmatic"
-backup_borg_docker_repo_version: main
-backup_borg_docker_src_files_path: "{{ backup_borg_base_path }}/docker-src"
+backup_borg_container_repo: "https://github.com/etkecc/borgmatic"
+backup_borg_container_repo_version: main
+backup_borg_container_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 
 # Image and Postgres version are determined automatically, based on the detected Postgres server version (if enabled), otherwise latest is used
 # Also see the `backup_borg_postgresql_version_detection_*` variables.
@@ -39,11 +39,11 @@ backup_borg_postgres_version: ""
 backup_borg_borg_version: 1.4.3
 backup_borg_borgmatic_version: 2.1.1
 backup_borg_alpine_version: edge
-backup_borg_docker_image: "{{ backup_borg_docker_image_registry_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
-backup_borg_docker_image_registry_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else backup_borg_docker_image_registry_prefix_upstream }}"
-backup_borg_docker_image_registry_prefix_upstream: "{{ backup_borg_docker_image_registry_prefix_upstream_default }}"
-backup_borg_docker_image_registry_prefix_upstream_default: "ghcr.io/"
-backup_borg_docker_image_force_pull: "{{ backup_borg_docker_image.endswith(':latest') }}"
+backup_borg_container_image: "{{ backup_borg_container_image_registry_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
+backup_borg_container_image_registry_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else backup_borg_container_image_registry_prefix_upstream }}"
+backup_borg_container_image_registry_prefix_upstream: "{{ backup_borg_container_image_registry_prefix_upstream_default }}"
+backup_borg_container_image_registry_prefix_upstream_default: "ghcr.io/"
+backup_borg_container_image_force_pull: "{{ backup_borg_container_image.endswith(':latest') }}"
 
 # Specify the size of the container's tmpfs volumes
 backup_borg_container_tmpfs_tmp_size: 4096m

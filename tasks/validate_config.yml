@@ -12,7 +12,15 @@
   when: "lookup('ansible.builtin.varnames', ('^' + item.old + '$'), wantlist=True) | length > 0"
   with_items:
     - { "old": "backup_borg_container_tmp_size", "new": "backup_borg_container_tmpfs_tmp_size" }
-    - { "old": "backup_borg_docker_image_name_prefix", "new": "backup_borg_docker_image_registry_prefix" }
+    - { "old": "backup_borg_docker_image_name_prefix", "new": "backup_borg_container_image_registry_prefix" }
+    - { "old": "backup_borg_docker_image", "new": "backup_borg_container_image" }
+    - { "old": "backup_borg_docker_image_force_pull", "new": "backup_borg_container_image_force_pull" }
+    - { "old": "backup_borg_docker_image_registry_prefix", "new": "backup_borg_container_image_registry_prefix" }
+    - { "old": "backup_borg_docker_image_registry_prefix_upstream", "new": "backup_borg_container_image_registry_prefix_upstream" }
+    - { "old": "backup_borg_docker_image_registry_prefix_upstream_default", "new": "backup_borg_container_image_registry_prefix_upstream_default" }
+    - { "old": "backup_borg_docker_repo", "new": "backup_borg_container_repo" }
+    - { "old": "backup_borg_docker_repo_version", "new": "backup_borg_container_repo_version" }
+    - { "old": "backup_borg_docker_src_files_path", "new": "backup_borg_container_src_files_path" }
 
 - name: Fail if required BorgBackup settings not defined
   ansible.builtin.fail:

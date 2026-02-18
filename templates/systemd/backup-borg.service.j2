@@ -37,7 +37,7 @@ ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --n
       {% for arg in backup_borg_container_extra_arguments %}
       {{ arg }} \
       {% endfor %}
-      {{ backup_borg_docker_image }} \
+      {{ backup_borg_container_image }} \
       sh -c "borgmatic rcreate --encryption {{ backup_borg_encryption }}"
 
 # The `CAP_DAC_OVERRIDE` capability is required, so that `root` in the container
@@ -62,7 +62,7 @@ ExecStart={{ devture_systemd_docker_base_host_command_docker }} run --rm --name 
       {% for arg in backup_borg_container_extra_arguments %}
       {{ arg }} \
       {% endfor %}
-      {{ backup_borg_docker_image }}
+      {{ backup_borg_container_image }}
 
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ backup_borg_identifier }} 2>/dev/null || true'
 ExecStop=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ backup_borg_identifier }} 2>/dev/null || true'
