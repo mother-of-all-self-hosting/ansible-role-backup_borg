@@ -20,8 +20,7 @@ DefaultDependencies=no
 [Service]
 Type=oneshot
 Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} stop -t {{ devture_systemd_docker_base_container_stop_grace_time_seconds }} {{ backup_borg_identifier }} 2>/dev/null || true'
-ExecStartPre=-{{ devture_systemd_docker_base_host_command_sh }} -c '{{ devture_systemd_docker_base_host_command_docker }} rm {{ backup_borg_identifier }} 2>/dev/null || true'
+ExecStartPre={{ devture_systemd_docker_base_host_command_sh }} -c '{{ backup_borg_container_cleanup_command | trim | replace("\n", " ") }}'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ backup_borg_identifier }} \
       --log-driver=none \
       --cap-drop=ALL \
