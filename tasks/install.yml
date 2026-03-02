@@ -69,14 +69,16 @@
     mode: "0640"
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
+  register: backup_borg_borgmatic_config_file_result
 
 - name: Ensure borgmatic script is created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/bin/borgmatic.j2"
     dest: "{{ backup_borg_bin_path }}/borgmatic"
+    mode: "0750"
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
-    mode: "0750"
+  register: backup_borg_borgmatic_script_result
 
 - name: Ensure BorgBackup passwd is created
   ansible.builtin.template:
@@ -85,14 +87,16 @@
     mode: "0640"
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
+  register: backup_borg_passwd_result
 
 - name: Ensure BorgBackup SSH key is created
   ansible.builtin.template:
     src: "{{ role_path }}/templates/sshkey.j2"
     dest: "{{ backup_borg_config_path }}/sshkey"
+    mode: "0600"
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
-    mode: "0600"
+  register: backup_borg_sshkey_result
 
 - name: Run if self-building of BorgBackup container image is not enabled
   when: "not backup_borg_container_image_self_build | bool"
@@ -104,20 +108,20 @@
         source: "{{ 'pull' if ansible_version.major > 2 or ansible_version.minor > 7 else omit }}"
         force_source: "{{ backup_borg_container_image_force_pull if ansible_version.major > 2 or ansible_version.minor >= 8 else omit }}"
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else backup_borg_container_image_force_pull }}"
-      register: result
+      register: backup_borg_container_image_pull_result
       retries: "{{ devture_playbook_help_container_retries_count }}"
       delay: "{{ devture_playbook_help_container_retries_delay }}"
-      until: result is not failed
+      until: backup_borg_container_image_pull_result is not failed
 
     - name: Ensure BorgBackup container image is pulled via ansible.builtin.command
       when: devture_systemd_docker_base_container_image_pull_method == 'command'
       ansible.builtin.command:
         cmd: "{{ devture_systemd_docker_base_host_command_docker }} pull {{ backup_borg_container_image }}"
-      register: result
+      register: backup_borg_container_image_pull_result
       retries: "{{ devture_playbook_help_container_retries_count }}"
       delay: "{{ devture_playbook_help_container_retries_delay }}"
-      until: result is not failed
-      changed_when: "'Downloaded newer image' in result.stdout"
+      until: backup_borg_container_image_pull_result is not failed
+      changed_when: "'Downloaded newer image' in backup_borg_container_image_pull_result.stdout"
 
 - name: Run if self-building of BorgBackup container image is enabled
   when: "backup_borg_container_image_self_build | bool"
@@ -145,6 +149,7 @@
             BORG_VERSION: "{{ backup_borg_borg_version }}"
             BORGMATIC_VERSION: "{{ backup_borg_borgmatic_version }}"
             ALPINE_VERSION: "{{ backup_borg_alpine_version }}"
+      register: backup_borg_container_image_build_result
 
 - name: Ensure BorgBackup container network is created via community.docker.docker_network
   when: devture_systemd_docker_base_container_network_creation_method == 'ansible-module'
@@ -175,3 +180,17 @@
   with_items:
     - service
     - timer
+  register: backup_borg_systemd_services_result
+
+- name: Determine whether BorgBackup needs a restart
+  ansible.builtin.set_fact:
+    backup_borg_restart_necessary: >-
+      {{
+        backup_borg_borgmatic_config_file_result.changed | default(false)
+        or backup_borg_borgmatic_script_result.changed | default(false)
+        or backup_borg_passwd_result.changed | default(false)
+        or backup_borg_sshkey_result.changed | default(false)
+        or backup_borg_systemd_services_result.changed | default(false)
+        or backup_borg_container_image_pull_result.changed | default(false)
+        or backup_borg_container_image_build_result.changed | default(false)
+      }}
