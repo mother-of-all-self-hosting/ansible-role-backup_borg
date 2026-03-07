@@ -1,7 +1,8 @@
-# SPDX-FileCopyrightText: 2023 - 2024 Slavi Pantaleev
-# SPDX-FileCopyrightText: 2023 - 2025 Nikita Chernyi
 # SPDX-FileCopyrightText: 2023 Julian-Samuel Gebühr
+# SPDX-FileCopyrightText: 2023, 2024 Slavi Pantaleev
+# SPDX-FileCopyrightText: 2023-2025 Nikita Chernyi
 # SPDX-FileCopyrightText: 2025 moanos <julian-samuel@gebuehr.net>
+# SPDX-FileCopyrightText: 2026 Suguru Hirahara
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -97,55 +98,90 @@ backup_borg_container_cleanup_command: |
   echo "Failed to remove stale container {{ backup_borg_identifier }} after {{ backup_borg_container_cleanup_timeout_seconds }} attempts" >&2;
   exit 1
 
-# systemd calendar configuration for the backup job
-# the actual job may run with a delay (see backup_borg_schedule_randomized_delay_sec)
+# Specify systemd calendar configuration for the backup job
+# Note that the actual job may run with a delay (see `backup_borg_schedule_randomized_delay_sec`)
 backup_borg_schedule: "*-*-* 04:00:00"
-# the delay with which the systemd timer may run in relation to the `backup_borg_schedule` schedule
+
+# Specify the delay with which the systemd timer may run in relation to the `backup_borg_schedule` schedule
 backup_borg_schedule_randomized_delay_sec: 2h
 
-# what directories should be added to backup
+# Specify directories should be added to backup
 backup_borg_location_source_directories: "{{ backup_borg_location_source_directories_auto + backup_borg_location_source_directories_custom }}"
-# _auto can be used to be automatically populated by playbooks
-backup_borg_location_source_directories_auto: []
-# _custom can be used to specify additional directories
-backup_borg_location_source_directories_custom: []
+backup_borg_location_source_directories_auto: [] # _auto can be used to be automatically populated by playbooks
+backup_borg_location_source_directories_custom: [] # _custom can be used to specify additional directories
+
+# Specify target repositories
+backup_borg_location_repositories: []
+
+# Specify excluded paths
+backup_borg_location_exclude_patterns: []
 
 backup_borg_location_remote_path: ""
 
+# Specify compression algorithm
+backup_borg_storage_compression: lz4
+
+# Specify BorgBackup SSH command to run with SSH key
+backup_borg_storage_ssh_command: ssh -o "StrictHostKeyChecking accept-new" -i /etc/borgmatic.d/sshkey
+
+# Specify archive name format
+backup_borg_storage_archive_name_format: backup-borg-{now:%Y-%m-%d-%H%M%S}
+
+# Specify repository passphrase
+backup_borg_storage_encryption_passphrase: ""
+
+# Control if unencrypted repoitory access is allowed
+backup_borg_unknown_unencrypted_repo_access_is_ok: "{{ backup_borg_encryption == 'none' }}"
+
+# Specify retention configuration
+backup_borg_retention_keep_hourly: 0
+backup_borg_retention_keep_daily: 7
+backup_borg_retention_keep_weekly: 4
+backup_borg_retention_keep_monthly: 12
+backup_borg_retention_keep_yearly: 2
+
+# Specify BorgBackup encryption mode
+# Only "repokey-*" and "none" are supported
+backup_borg_encryption: repokey-blake2
+
+# Specify private SSH key used to connect to the BorgBackup repo
+backup_borg_ssh_key_private: ""
+
+backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16', '17', '18']
+
 ########################################################################
 #                                                                      #
-# Postgres db backup                                                   #
+# Postgres database backup                                             #
 #                                                                      #
 ########################################################################
 
 backup_borg_postgresql_enabled: true
-backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16', '17', '18']
 
 # backup_borg_databases contains a list of database names to back up
-# DO NOT set this variable directly, instead use backup_borg_postgresql_databases_auto or backup_borg_postgresql_databases_custom
+# DO NOT set this variable directly, instead use `backup_borg_postgresql_databases_auto or backup_borg_postgresql_databases_custom`
 backup_borg_postgresql_databases: "{{ backup_borg_postgresql_databases_auto + backup_borg_postgresql_databases_custom }}"
 
-# The variable backup_borg_postgresql_databases_auto can be used by playbooks to automatically set the databases to back up
+# Used by playbooks to automatically set the databases to back up
 # E.g. the mash-playbook automatically sets up postgres databases for services that need them.
-# It therefore makes sense to automatically add them to this variable.
 backup_borg_postgresql_databases_auto: []
 
-# backup_borg_postgresql_databases_custom is there if you want to manually add databases to the backup
-# e.g. because their setup is not controlled by ansible
+# Specify the databases to back up
 backup_borg_postgresql_databases_custom: []
 
 backup_borg_postgresql_databases_hostname: ""
 backup_borg_postgresql_databases_username: "{{ backup_borg_identifier }}"
 backup_borg_postgresql_databases_password: ""
 backup_borg_postgresql_databases_port: 5432
+
 backup_borg_postgresql_version_detection_enabled: "{{ backup_borg_postgresql_version_detection_postgres_role_name != '' }}"
-# backup_borg_postgresql_version_detection_postgres_role_name lets you control the role name, leading to the com.devture.ansible.role.postgres.
+
+# Specify the role name, leading to the com.devture.ansible.role.postgres.
 # This role is invoked to determine the Postgres version, unless you have set `backup_borg_version` manually.
 backup_borg_postgresql_version_detection_postgres_role_name: ""
 
 ########################################################################
 #                                                                      #
-# /Postgres db backup                                                  #
+# /Postgres database backup                                            #
 #                                                                      #
 ########################################################################
 
@@ -161,7 +197,7 @@ backup_borg_mariadb_enabled: true
 # DO NOT set this variable directly, instead use `backup_borg_mariadb_databases_auto or backup_borg_mariadb_databases_custom`
 backup_borg_mariadb_databases: "{{ backup_borg_mariadb_databases_auto + backup_borg_mariadb_databases_custom }}"
 
-# The variable backup_borg_mariadb_databases_auto can be used by playbooks to automatically set the databases to back up
+# Used by playbooks to automatically set the databases to back up
 backup_borg_mariadb_databases_auto: []
 
 # Specify the databases to back up
@@ -180,23 +216,20 @@ backup_borg_mariadb_databases_port: 3306
 
 ########################################################################
 #                                                                      #
-# MySQL db backup                                                      #
+# MySQL database backup                                                #
 #                                                                      #
 ########################################################################
 
 backup_borg_mysql_enabled: true
 
 # backup_borg_databases contains a list of database names to back up
-# DO NOT set this variable directly, instead use backup_borg_mysql_databases_auto or backup_borg_mysql_databases_custom
+# DO NOT set this variable directly, instead use `backup_borg_mysql_databases_auto or backup_borg_mysql_databases_custom`
 backup_borg_mysql_databases: "{{ backup_borg_mysql_databases_auto + backup_borg_mysql_databases_custom }}"
 
-# The variable backup_borg_mysql_databases_auto can be used by playbooks to automatically set the databases to back up
-# E.g. the mash-playbook automatically sets up postgres databases for services that need them.
-# It therefore makes sense to automatically add them to this variable.
+# Used by playbooks to automatically set the databases to back up
 backup_borg_mysql_databases_auto: []
 
-# backup_borg_mysql_databases_custom is there if you want to manually add databases to the backup
-# e.g. because their setup is not controlled by ansible
+# Specify the databases to back up
 backup_borg_mysql_databases_custom: []
 
 backup_borg_mysql_databases_hostname: ""
@@ -206,7 +239,7 @@ backup_borg_mysql_databases_port: 3306
 
 ########################################################################
 #                                                                      #
-# /MySQL db backup                                                     #
+# /MySQL database backup                                               #
 #                                                                      #
 ########################################################################
 
@@ -216,11 +249,11 @@ backup_borg_mysql_databases_port: 3306
 #                                                                      #
 ########################################################################
 
-# Setting a healthchecks ping URL will make borgmatic ping your Healthchecks project when a backup begins, ends, or errors
-# See: https://torsion.org/borgmatic/docs/how-to/monitor-your-backups/#healthchecks-hook
+# Setting a Healthchecks ping URL will make borgmatic ping your Healthchecks project when a backup begins, ends, or errors
+# See: https://torsion.org/borgmatic/reference/configuration/monitoring/healthchecks/
 backup_borg_healthchecks_ping_url: ""
 
-# possible states to ping
+# Specify possible states to ping
 backup_borg_healthchecks_states:
   - start
   - finish
@@ -231,40 +264,6 @@ backup_borg_healthchecks_states:
 # /healthchecks                                                        #
 #                                                                      #
 ########################################################################
-
-# target repositories
-backup_borg_location_repositories: []
-
-# exclude following paths:
-backup_borg_location_exclude_patterns: []
-
-# BorgBackup encryption mode, only "repokey-*" and "none" are supported
-backup_borg_encryption: repokey-blake2
-
-# private SSH key used to connect to the BorgBackup repo
-backup_borg_ssh_key_private: ""
-
-# allow unencrypted repo access
-backup_borg_unknown_unencrypted_repo_access_is_ok: "{{ backup_borg_encryption == 'none' }}"
-
-# BorgBackup SSH command with SSH key
-backup_borg_storage_ssh_command: ssh -o "StrictHostKeyChecking accept-new" -i /etc/borgmatic.d/sshkey
-
-# compression algorithm
-backup_borg_storage_compression: lz4
-
-# archive name format
-backup_borg_storage_archive_name_format: backup-borg-{now:%Y-%m-%d-%H%M%S}
-
-# repository passphrase
-backup_borg_storage_encryption_passphrase: ""
-
-# retention configuration
-backup_borg_retention_keep_hourly: 0
-backup_borg_retention_keep_daily: 7
-backup_borg_retention_keep_weekly: 4
-backup_borg_retention_keep_monthly: 12
-backup_borg_retention_keep_yearly: 2
 
 # Default borgmatic configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
