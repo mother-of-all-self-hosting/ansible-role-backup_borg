@@ -12,39 +12,38 @@
 backup_borg_enabled: true
 
 backup_borg_identifier: 'backup-borg'
-backup_borg_username: 'backup-borg'
-
-backup_borg_uid: ""
-backup_borg_gid: ""
-
 backup_borg_base_path: "/{{ backup_borg_identifier }}"
 backup_borg_bin_path: "{{ backup_borg_base_path }}/bin"
 backup_borg_config_path: "{{ backup_borg_base_path }}/config"
 backup_borg_restore_path: "{{ backup_borg_base_path }}/restored"
 
-# The base container network. It will be auto-created by this role if it doesn't exist already.
-backup_borg_container_network: "{{ backup_borg_identifier }}"
+# Image and Postgres version are determined automatically, based on the detected Postgres server version (if enabled), otherwise latest is used
+# Also see the `backup_borg_postgresql_version_detection_*` variables.
+backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
+backup_borg_alpine_version: edge
+backup_borg_borg_version: 1.4.3
+backup_borg_borgmatic_version: 2.1.1
+backup_borg_postgres_version: ""
 
-# Control if the container network is deleted on uninstalling.
-backup_borg_container_network_deletion_enabled: true
+backup_borg_uid: ""
+backup_borg_gid: ""
+
+backup_borg_container_image: "{{ backup_borg_container_image_registry_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
+backup_borg_container_image_registry_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else backup_borg_container_image_registry_prefix_upstream }}"
+backup_borg_container_image_registry_prefix_upstream: "{{ backup_borg_container_image_registry_prefix_upstream_default }}"
+backup_borg_container_image_registry_prefix_upstream_default: "ghcr.io/"
+backup_borg_container_image_force_pull: "{{ backup_borg_container_image.endswith(':latest') }}"
 
 backup_borg_container_image_self_build: false
 backup_borg_container_repo: "https://github.com/etkecc/borgmatic"
 backup_borg_container_repo_version: main
 backup_borg_container_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 
-# Image and Postgres version are determined automatically, based on the detected Postgres server version (if enabled), otherwise latest is used
-# Also see the `backup_borg_postgresql_version_detection_*` variables.
-backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
-backup_borg_postgres_version: ""
-backup_borg_borg_version: 1.4.3
-backup_borg_borgmatic_version: 2.1.1
-backup_borg_alpine_version: edge
-backup_borg_container_image: "{{ backup_borg_container_image_registry_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
-backup_borg_container_image_registry_prefix: "{{ 'localhost/' if backup_borg_container_image_self_build else backup_borg_container_image_registry_prefix_upstream }}"
-backup_borg_container_image_registry_prefix_upstream: "{{ backup_borg_container_image_registry_prefix_upstream_default }}"
-backup_borg_container_image_registry_prefix_upstream_default: "ghcr.io/"
-backup_borg_container_image_force_pull: "{{ backup_borg_container_image.endswith(':latest') }}"
+# The base container network. It will be auto-created by this role if it doesn't exist already.
+backup_borg_container_network: "{{ backup_borg_identifier }}"
+
+# Control if the container network is deleted on uninstalling.
+backup_borg_container_network_deletion_enabled: true
 
 # Specify the size of the container's tmpfs volumes
 backup_borg_container_tmpfs_tmp_size: 4096m
@@ -97,6 +96,8 @@ backup_borg_container_cleanup_command: |
   done;
   echo "Failed to remove stale container {{ backup_borg_identifier }} after {{ backup_borg_container_cleanup_timeout_seconds }} attempts" >&2;
   exit 1
+
+backup_borg_username: 'backup-borg'
 
 # Specify systemd calendar configuration for the backup job
 # Note that the actual job may run with a delay (see `backup_borg_schedule_randomized_delay_sec`)
