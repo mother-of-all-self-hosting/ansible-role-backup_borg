@@ -14,6 +14,8 @@ This is an [Ansible](https://www.ansible.com/) role which installs and configure
 
 BorgBackup is a deduplicating backup program with optional compression and encryption. That means your daily incremental backups can be stored in a fraction of the space and is safe whether you store it at home or on a cloud service.
 
+See the borgmatic's [documentation](https://torsion.org/borgmatic/reference/configuration/) to learn what BorgBackup does and why it might be useful to you.
+
 ## Prerequisites
 
 ### Set up a remote server for storing backups
