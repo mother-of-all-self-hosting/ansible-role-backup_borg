@@ -60,7 +60,7 @@
     state: directory
     mode: "0750"
   with_items:
-    - "{{ backup_borg_container_src_files_path }}"
+    - "{{ backup_borg_container_image_self_build_src_files_path }}"
 
 - name: Ensure borgmatic configuration file installed
   ansible.builtin.copy:
@@ -130,7 +130,7 @@
       ansible.builtin.git:
         repo: "{{ backup_borg_container_image_self_build_repo }}"
         version: "{{ backup_borg_container_image_self_build_repo_version }}"
-        dest: "{{ backup_borg_container_src_files_path }}"
+        dest: "{{ backup_borg_container_image_self_build_src_files_path }}"
         force: "yes"
       register: backup_borg_git_pull_results
 
@@ -142,7 +142,7 @@
         force: "{{ omit if ansible_version.major > 2 or ansible_version.minor >= 8 else backup_borg_git_pull_results.changed }}"
         build:
           dockerfile: Dockerfile
-          path: "{{ backup_borg_container_src_files_path }}"
+          path: "{{ backup_borg_container_image_self_build_src_files_path }}"
           pull: true
           args:
             POSTGRES_VERSION: "{{ backup_borg_postgres_version }}"
