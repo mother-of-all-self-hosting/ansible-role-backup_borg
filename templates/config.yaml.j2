@@ -51,6 +51,17 @@ healthchecks:
   states: {{ backup_borg_healthchecks_states|to_json }}
 {% endif %}
 
+{% if backup_borg_mariadb_enabled and backup_borg_mariadb_databases|length > 0 %}
+mariadb_databases:
+{% for database in backup_borg_mariadb_databases %}
+- name: {{ database|to_json }}
+  hostname: {{ backup_borg_mariadb_databases_hostname|to_json }}
+  username: {{ backup_borg_mariadb_databases_username|to_json }}
+  password: {{ backup_borg_mariadb_databases_password|to_json }}
+  port: {{ backup_borg_mariadb_databases_port | int | to_json }}
+{% endfor %}
+{% endif %}
+
 {% if backup_borg_mysql_enabled and backup_borg_mysql_databases|length > 0 %}
 mysql_databases:
 {% for database in backup_borg_mysql_databases %}

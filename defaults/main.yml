@@ -151,6 +151,35 @@ backup_borg_postgresql_version_detection_postgres_role_name: ""
 
 ########################################################################
 #                                                                      #
+# MariaDB database backup                                              #
+#                                                                      #
+########################################################################
+
+backup_borg_mariadb_enabled: true
+
+# backup_borg_databases contains a list of database names to back up
+# DO NOT set this variable directly, instead use `backup_borg_mariadb_databases_auto or backup_borg_mariadb_databases_custom`
+backup_borg_mariadb_databases: "{{ backup_borg_mariadb_databases_auto + backup_borg_mariadb_databases_custom }}"
+
+# The variable backup_borg_mariadb_databases_auto can be used by playbooks to automatically set the databases to back up
+backup_borg_mariadb_databases_auto: []
+
+# Specify the databases to back up
+backup_borg_mariadb_databases_custom: []
+
+backup_borg_mariadb_databases_hostname: ""
+backup_borg_mariadb_databases_username: "{{ backup_borg_identifier }}"
+backup_borg_mariadb_databases_password: ""
+backup_borg_mariadb_databases_port: 3306
+
+########################################################################
+#                                                                      #
+# /MariaDB database backup                                             #
+#                                                                      #
+########################################################################
+
+########################################################################
+#                                                                      #
 # MySQL db backup                                                      #
 #                                                                      #
 ########################################################################
