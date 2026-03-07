@@ -35,6 +35,7 @@
     - { "name": "backup_borg_container_network", when: true }
     - { "name": "backup_borg_postgresql_databases_hostname", when: "{{ backup_borg_postgresql_enabled }}" }
     - { "name": "backup_borg_mariadb_databases_hostname", when: "{{ backup_borg_mariadb_enabled }}" }
+    - { "name": "backup_borg_mysql_databases_hostname", when: "{{ backup_borg_mysql_enabled }}" }
 
 - name: Fail if encryption passphrase is undefined unless repository is unencrypted
   ansible.builtin.fail:
