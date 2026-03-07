@@ -36,7 +36,7 @@ backup_borg_container_image_force_pull: "{{ backup_borg_container_image.endswith
 
 backup_borg_container_image_self_build: false
 backup_borg_container_repo: "https://github.com/etkecc/borgmatic"
-backup_borg_container_repo_version: main
+backup_borg_container_image_self_build_repo_version: main
 backup_borg_container_src_files_path: "{{ backup_borg_base_path }}/docker-src"
 
 # The base container network. It will be auto-created by this role if it doesn't exist already.
