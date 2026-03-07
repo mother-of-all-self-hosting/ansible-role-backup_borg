@@ -23,7 +23,8 @@ SPDX-License-Identifier = "CC0-1.0"
 path = ["templates/config.yaml.j2"]
 SPDX-FileCopyrightText = [
   "2023 Julian-Samuel Gebühr",
-  "2023 - 2024 Nikita Chernyi"
+  "2023 - 2024 Nikita Chernyi",
+  "2026 Suguru Hirahara"
 ]
 SPDX-License-Identifier = "AGPL-3.0-or-later"
 

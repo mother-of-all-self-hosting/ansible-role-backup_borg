@@ -112,7 +112,12 @@ backup_borg_location_source_directories_custom: []
 
 backup_borg_location_remote_path: ""
 
-# Postgres db backup
+########################################################################
+#                                                                      #
+# Postgres db backup                                                   #
+#                                                                      #
+########################################################################
+
 backup_borg_postgresql_enabled: true
 backup_borg_supported_postgres_versions: ['12', '13', '14', '15', '16', '17', '18']
 
@@ -138,7 +143,18 @@ backup_borg_postgresql_version_detection_enabled: "{{ backup_borg_postgresql_ver
 # This role is invoked to determine the Postgres version, unless you have set `backup_borg_version` manually.
 backup_borg_postgresql_version_detection_postgres_role_name: ""
 
-# MySQL db backup
+########################################################################
+#                                                                      #
+# /Postgres db backup                                                  #
+#                                                                      #
+########################################################################
+
+########################################################################
+#                                                                      #
+# MySQL db backup                                                      #
+#                                                                      #
+########################################################################
+
 backup_borg_mysql_enabled: true
 
 # backup_borg_databases contains a list of database names to back up
@@ -159,14 +175,33 @@ backup_borg_mysql_databases_username: "{{ backup_borg_identifier }}"
 backup_borg_mysql_databases_password: ""
 backup_borg_mysql_databases_port: 3306
 
+########################################################################
+#                                                                      #
+# /MySQL db backup                                                     #
+#                                                                      #
+########################################################################
+
+########################################################################
+#                                                                      #
+# healthchecks                                                         #
+#                                                                      #
+########################################################################
+
 # Setting a healthchecks ping URL will make borgmatic ping your Healthchecks project when a backup begins, ends, or errors
 # See: https://torsion.org/borgmatic/docs/how-to/monitor-your-backups/#healthchecks-hook
 backup_borg_healthchecks_ping_url: ""
+
 # possible states to ping
 backup_borg_healthchecks_states:
   - start
   - finish
   - fail
+
+########################################################################
+#                                                                      #
+# /healthchecks                                                        #
+#                                                                      #
+########################################################################
 
 # target repositories
 backup_borg_location_repositories: []
