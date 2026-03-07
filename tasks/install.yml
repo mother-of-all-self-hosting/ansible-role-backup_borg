@@ -128,7 +128,7 @@
   block:
     - name: Ensure BorgBackup repository is present on self-build
       ansible.builtin.git:
-        repo: "{{ backup_borg_container_repo }}"
+        repo: "{{ backup_borg_container_image_self_build_repo }}"
         version: "{{ backup_borg_container_image_self_build_repo_version }}"
         dest: "{{ backup_borg_container_src_files_path }}"
         force: "yes"
