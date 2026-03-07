@@ -56,6 +56,17 @@ mariadb_databases:
 {% endfor %}
 {% endif %}
 
+{% if backup_borg_mongodb_enabled and backup_borg_mongodb_databases|length > 0 %}
+mongodb_databases:
+{% for database in backup_borg_mongodb_databases %}
+- name: {{ database|to_json }}
+  hostname: {{ backup_borg_mongodb_databases_hostname|to_json }}
+  username: {{ backup_borg_mongodb_databases_username|to_json }}
+  password: {{ backup_borg_mongodb_databases_password|to_json }}
+  port: {{ backup_borg_mongodb_databases_port | int | to_json }}
+{% endfor %}
+{% endif %}
+
 {% if backup_borg_mysql_enabled and backup_borg_mysql_databases|length > 0 %}
 mysql_databases:
 {% for database in backup_borg_mysql_databases %}
