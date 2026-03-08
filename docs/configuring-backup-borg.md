@@ -206,11 +206,10 @@ This will not return until the backup is done, so it can possibly take a long ti
 
 Example playbook configuration (`group_vars/servers` or other):
 
-```yaml
-# The configuration below wires the BorgBackup role with the MASH/Postgres role (https://github.com/mother-of-all-self-hosting/ansible-role-postgres)
-# This is just an example, however.
-# You can use this BorgBackup role without it Postgres integration or with another Postgres instance.
+>[!NOTE]
+> The configuration below wires the BorgBackup role with [this MASH/Postgres role](https://github.com/mother-of-all-self-hosting/ansible-role-postgres). Note that this is just an example. You can use this role without it Postgres integration or with another Postgres instance.
 
+```yaml
 backup_borg_enabled: false
 
 backup_borg_identifier: my-borgbackup
