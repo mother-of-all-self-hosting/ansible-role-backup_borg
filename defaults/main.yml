@@ -295,6 +295,28 @@ backup_borg_healthchecks_states:
 #                                                                      #
 ########################################################################
 
+########################################################################
+#                                                                      #
+# ntfy                                                                 #
+#                                                                      #
+########################################################################
+
+# Setting ntfy's topic and the address of your self-hosted ntfy instance will have borgmatic send push notifications when a backup task fails
+# See: https://torsion.org/borgmatic/reference/configuration/monitoring/ntfy/
+backup_borg_ntfy_topic: ""
+backup_borg_ntfy_server: ""
+
+backup_borg_ntfy_access_username: ""
+backup_borg_ntfy_access_password: ""
+
+backup_borg_ntfy_access_token: ""
+
+########################################################################
+#                                                                      #
+# /ntfy                                                                #
+#                                                                      #
+########################################################################
+
 # Default borgmatic configuration template which covers the generic use case.
 # You can customize it by controlling the various variables inside it.
 #

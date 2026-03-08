@@ -1,9 +1,9 @@
 <!--
-SPDX-FileCopyrightText: 2022 - 2025 Nikita Chernyi
-SPDX-FileCopyrightText: 2022 - 2024 Slavi Pantaleev
 SPDX-FileCopyrightText: 2022 MDAD project contributors
-SPDX-FileCopyrightText: 2022 - 2023 Julian-Samuel Gebühr
-SPDX-FileCopyrightText: 2024 - 2025 Suguru Hirahara
+SPDX-FileCopyrightText: 2022, 2023 Julian-Samuel Gebühr
+SPDX-FileCopyrightText: 2022-2024 Slavi Pantaleev
+SPDX-FileCopyrightText: 2022-2025 Nikita Chernyi
+SPDX-FileCopyrightText: 2024-2026 Suguru Hirahara
 
 SPDX-License-Identifier: AGPL-3.0-or-later
 -->
@@ -138,6 +138,26 @@ backup_borg_schedule: "*-*-* 04:00:00"
 `backup_borg_location_source_directories` defines the list of directories to back up.
 
 You might also want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable.
+
+### Configuring ntfy integration (optional)
+
+You can also have the service send push notifications to your self-hosted [ntfy](https://ntfy.sh/) instance. To enable it, it is necessary to specify the topic to send them, the server's hostname, and login credentials (username and password, or access token) by adding the following configuration to your `vars.yml` file (adapt to your needs):
+
+```yaml
+backup_borg_ntfy_topic: YOUR_NTFY_TOPIC_HERE
+backup_borg_ntfy_server: YOUR_NTFY_INSTANCE_HOSTNAME_HERE
+
+# Specify username and password
+backup_borg_ntfy_access_username: ""
+backup_borg_ntfy_access_password: ""
+
+# Otherwise, specify the access token
+backup_borg_ntfy_access_token: ""
+```
+
+Refer to [this page](https://torsion.org/borgmatic/reference/configuration/monitoring/ntfy/) on the official documentation for details.
+
+If you are looking for an Ansible role for ntfy, you can check out [ansible-role-ntfy](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy) maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team.
 
 ### Extending the configuration
 

@@ -37,6 +37,8 @@
     - { "name": "backup_borg_mariadb_databases_hostname", when: "{{ backup_borg_mariadb_enabled }}" }
     - { "name": "backup_borg_mongodb_databases_hostname", when: "{{ backup_borg_mongodb_enabled }}" }
     - { "name": "backup_borg_mysql_databases_hostname", when: "{{ backup_borg_mysql_enabled }}" }
+    - { "name": "backup_borg_ntfy_server", when: "{{ backup_borg_ntfy_topic != '' }}" }
+    - { "name": "backup_borg_ntfy_access_password", when: "{{ backup_borg_ntfy_access_username != '' }}" }
 
 - name: Fail if encryption passphrase is undefined unless repository is unencrypted
   ansible.builtin.fail:

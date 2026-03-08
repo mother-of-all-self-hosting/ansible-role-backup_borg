@@ -83,3 +83,15 @@ healthchecks:
   ping_url: {{ backup_borg_healthchecks_ping_url|to_json }}
   states: {{ backup_borg_healthchecks_states|to_json }}
 {% endif %}
+
+{% if backup_borg_ntfy_topic | length > 0 %}
+ntfy:
+  topic: {{ backup_borg_ntfy_topic | to_json }}
+  server: {{ backup_borg_ntfy_server | to_json }}
+{% if backup_borg_ntfy_access_username != '' %}
+  username: {{ backup_borg_ntfy_access_username | to_json }}
+  password: {{ backup_borg_ntfy_access_password | to_json }}
+{% elif backup_borg_ntfy_access_token != '' %}
+  access_token: {{ backup_borg_ntfy_access_token | to_json }}
+{% endif %}
+{% endif %}
