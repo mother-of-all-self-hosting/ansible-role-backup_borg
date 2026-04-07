@@ -21,7 +21,7 @@ backup_borg_restore_path: "{{ backup_borg_base_path }}/restored"
 # Also see the `backup_borg_postgresql_version_detection_*` variables.
 backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
 backup_borg_alpine_version: edge
-backup_borg_borg_version: 1.4.3
+backup_borg_borg_version: 1.4.4
 backup_borg_borgmatic_version: 2.1.4
 backup_borg_postgres_version: ""
 
