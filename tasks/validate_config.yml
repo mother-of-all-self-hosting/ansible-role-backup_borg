@@ -20,6 +20,7 @@
     - { "old": "backup_borg_docker_image_registry_prefix_upstream_default", "new": "backup_borg_container_image_registry_prefix_upstream_default" }
     - { "old": "backup_borg_container_repo", "new": "backup_borg_container_image_self_build_repo" }
     - { "old": "backup_borg_container_src_files_path", "new": "backup_borg_container_image_self_build_src_files_path" }
+    - { "old": "backup_borg_container_image_force_pull", "new": "<removed> (the new community.docker.docker_image_pull module handles this natively)" }
 
 - name: Fail if required BorgBackup settings not defined
   ansible.builtin.fail:
