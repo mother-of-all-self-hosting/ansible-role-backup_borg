@@ -139,6 +139,11 @@ backup_borg_schedule: "*-*-* 04:00:00"
 
 You might also want to exclude certain directories or file patterns from the backup using the `backup_borg_location_exclude_patterns` variable.
 
+>[!NOTE]
+> If you use multiple playbooks which utliize this role, you should make sure by yourself that the all of the directories to be backed up which those playbooks manage are correctly specified to `backup_borg_location_source_directories`.
+>
+> For example, backing up data directories of the [matrix-docker-ansible-deploy Ansible playbook](https://github.com/spantaleev/matrix-docker-ansible-deploy) and the [Mother-of-All-Self-Hosting Ansible playbook](https://github.com/mother-of-all-self-hosting/mash-playbook) requires both `matrix_base_data_path` and `mash_playbook_base_path` to be specified. Refer to the configuration files of the playbooks for details.
+
 ### Configuring ntfy integration (optional)
 
 You can also have the service send push notifications to your self-hosted [ntfy](https://ntfy.sh/) instance. To enable it, it is necessary to specify the topic to send them, the server's hostname, and login credentials (username and password, or access token) by adding the following configuration to your `vars.yml` file (adapt to your needs):
