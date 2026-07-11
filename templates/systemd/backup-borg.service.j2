@@ -23,9 +23,9 @@ Environment="HOME={{ devture_systemd_docker_base_systemd_unit_home_path }}"
 ExecStartPre={{ devture_systemd_docker_base_host_command_sh }} -c '{{ backup_borg_container_cleanup_command | trim | replace("\n", " ") }}'
 ExecStartPre=-{{ devture_systemd_docker_base_host_command_docker }} run --rm --name {{ backup_borg_identifier }} \
       --log-driver=none \
+      --user={{ backup_borg_uid }}:{{ backup_borg_gid }} \
       --cap-drop=ALL \
       --read-only \
-      --user={{ backup_borg_uid }}:{{ backup_borg_gid }} \
       --network={{ backup_borg_container_network }} \
       --mount type=bind,src={{ backup_borg_config_path }}/passwd,dst=/etc/passwd,ro \
       --mount type=bind,src={{ backup_borg_config_path }},dst=/etc/borgmatic.d,ro \
