@@ -114,7 +114,9 @@ backup_borg_location_source_directories_custom: [] # _custom can be used to spec
 backup_borg_location_repositories: []
 
 # Specify excluded paths
-backup_borg_location_exclude_patterns: []
+backup_borg_location_exclude_patterns: "{{ backup_borg_location_exclude_patterns_auto + backup_borg_location_exclude_patterns_custom }}"
+backup_borg_location_exclude_patterns_auto: [] # _auto can be used to be automatically populated by playbooks
+backup_borg_location_exclude_patterns_custom: [] # _custom can be used to specify additional exclude patterns
 
 backup_borg_location_remote_path: ""
 
