@@ -1,6 +1,9 @@
 ---
 galaxy_info:
   author: mash
+  company: mash
+  role_name: backup_borg
+  namespace: mash
   description: BorgBackup role
   platforms:
     - name: Debian
