@@ -1,0 +1,376 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+- name: Verify BorgBackup
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    # Role defaults are not in scope here, but the two versions that Renovate
+    # bumps live in them and are what the running borg and borgmatic are
+    # checked against below.
+    - name: Load the BorgBackup role defaults
+      ansible.builtin.include_vars:
+        file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
+        name: backup_borg_defaults
+
+    - name: Determine what the BorgBackup container image reference should be
+      ansible.builtin.set_fact:
+        backup_borg_expected_container_image: >-
+          ghcr.io/etkecc/borgmatic:{{ backup_borg_postgres_version }}-{{
+          backup_borg_defaults.backup_borg_borg_version }}-{{
+          backup_borg_defaults.backup_borg_borgmatic_version }}
+
+    # ---------------------------------------------------------------------
+    # The borgmatic wrapper script is something the kernel will execute
+    # ---------------------------------------------------------------------
+
+    - name: Stat the BorgBackup wrapper script
+      ansible.builtin.stat:
+        path: "{{ backup_borg_bin_path }}/borgmatic"
+      register: backup_borg_script_stat
+
+    - name: Read the BorgBackup wrapper script
+      ansible.builtin.slurp:
+        src: "{{ backup_borg_bin_path }}/borgmatic"
+      register: backup_borg_script
+
+    - name: Make sense of the BorgBackup wrapper script
+      ansible.builtin.set_fact:
+        backup_borg_script_lines: "{{ (backup_borg_script.content | b64decode).splitlines() }}"
+
+    # An executable whose first line is not a shebang is rejected by the kernel
+    # with ENOEXEC. Interactive shells paper over that by falling back to
+    # /bin/sh, which is why this script was usable by hand for years while
+    # every non-interactive caller (systemd, Ansible, cron) would have failed.
+    - name: Assert the BorgBackup wrapper script is executable and wired as configured
+      ansible.builtin.assert:
+        that:
+          - backup_borg_script_stat.stat.exists
+          - backup_borg_script_stat.stat.mode == '0750'
+          - backup_borg_script_lines[0] == '#!/usr/bin/env bash'
+          - backup_borg_script_lines | select('search', '--network=' ~ backup_borg_container_network) | list | length > 0
+          - backup_borg_script_lines | select('search', 'dst=/restore') | list | length > 0
+          - backup_borg_script_lines | select('search', backup_borg_expected_container_image | trim) | list | length > 0
+        fail_msg: "The BorgBackup wrapper script is not what it should be: {{ backup_borg_script_lines }}"
+        success_msg: >-
+          The BorgBackup wrapper script starts with a shebang and runs
+          {{ backup_borg_expected_container_image | trim }}
+
+    # ---------------------------------------------------------------------
+    # The role's knobs are what borgmatic is configured with
+    # ---------------------------------------------------------------------
+
+    - name: Read the BorgBackup borgmatic configuration file
+      ansible.builtin.slurp:
+        src: "{{ backup_borg_config_path }}/config.yaml"
+      register: backup_borg_configuration_file
+
+    - name: Make sense of the BorgBackup borgmatic configuration file
+      ansible.builtin.set_fact:
+        backup_borg_configuration_parsed: "{{ backup_borg_configuration_file.content | b64decode | from_yaml }}"
+
+    - name: Assert the configured settings reached borgmatic
+      ansible.builtin.assert:
+        that:
+          - backup_borg_configuration_parsed.repositories | map(attribute='path') | list == [backup_borg_molecule_repository_path]
+          - backup_borg_configuration_parsed.source_directories == [backup_borg_molecule_source_path]
+          - >-
+            backup_borg_configuration_parsed.exclude_patterns
+            == [backup_borg_molecule_source_path ~ '/' ~ backup_borg_molecule_excluded_file_name]
+          - backup_borg_configuration_parsed.compression == backup_borg_storage_compression
+          - backup_borg_configuration_parsed.archive_name_format == backup_borg_storage_archive_name_format
+          - backup_borg_configuration_parsed.encryption_passphrase == backup_borg_storage_encryption_passphrase
+          - backup_borg_configuration_parsed.keep_hourly == backup_borg_retention_keep_hourly
+          - backup_borg_configuration_parsed.keep_daily == backup_borg_retention_keep_daily
+          - backup_borg_configuration_parsed.keep_weekly == backup_borg_retention_keep_weekly
+          - backup_borg_configuration_parsed.keep_monthly == backup_borg_retention_keep_monthly
+          - backup_borg_configuration_parsed.keep_yearly == backup_borg_retention_keep_yearly
+          # The database hooks are off in this scenario, so borgmatic must not
+          # have been told to dump anything.
+          - "'postgresql_databases' not in backup_borg_configuration_parsed"
+          - "'mariadb_databases' not in backup_borg_configuration_parsed"
+        fail_msg: "The configured settings did not reach borgmatic: {{ backup_borg_configuration_parsed }}"
+        success_msg: "The configured repository, sources, exclusions, compression and retention reached borgmatic"
+
+    # ---------------------------------------------------------------------
+    # The systemd service and timer are wired to each other and to borgmatic
+    # ---------------------------------------------------------------------
+
+    - name: Determine the BorgBackup systemd unit paths
+      ansible.builtin.command:
+        argv:
+          - systemctl
+          - show
+          - --property=FragmentPath
+          - --value
+          - "backup-borg.{{ item }}"
+      register: backup_borg_unit_paths
+      changed_when: false
+      loop:
+        - service
+        - timer
+
+    - name: Read the BorgBackup systemd units
+      ansible.builtin.slurp:
+        src: "{{ item.stdout | trim }}"
+      register: backup_borg_units
+      loop: "{{ backup_borg_unit_paths.results }}"
+      loop_control:
+        label: "{{ item.stdout | trim }}"
+
+    - name: Make sense of the BorgBackup systemd units
+      ansible.builtin.set_fact:
+        backup_borg_service_lines: "{{ (backup_borg_units.results[0].content | b64decode).splitlines() }}"
+        backup_borg_timer_lines: "{{ (backup_borg_units.results[1].content | b64decode).splitlines() }}"
+
+    - name: Assert the BorgBackup systemd units are wired as configured
+      ansible.builtin.assert:
+        that:
+          # A one-shot, so that a backup is something that completes rather
+          # than something that stays up.
+          - "'Type=oneshot' in backup_borg_service_lines"
+          - >-
+            backup_borg_service_lines
+            | select('search', 'borgmatic rcreate --encryption ' ~ backup_borg_defaults.backup_borg_encryption)
+            | list | length > 0
+          - backup_borg_service_lines | select('search', backup_borg_expected_container_image | trim) | list | length > 0
+          # The repository mount that the scenario adds through the role's
+          # extra-arguments hook has to reach both the backup and the
+          # repository-creating ExecStartPre.
+          - >-
+            backup_borg_service_lines
+            | select('search', 'src=' ~ backup_borg_molecule_repository_path ~ ',dst=' ~ backup_borg_molecule_repository_path)
+            | list | length == 2
+          - "'Unit=backup-borg.service' in backup_borg_timer_lines"
+          - "'OnCalendar=' ~ backup_borg_schedule in backup_borg_timer_lines"
+          - "'RandomizedDelaySec=' ~ backup_borg_schedule_randomized_delay_sec in backup_borg_timer_lines"
+        fail_msg: >-
+          The BorgBackup systemd units are not wired as configured:
+          {{ backup_borg_service_lines }} / {{ backup_borg_timer_lines }}
+        success_msg: >-
+          backup-borg.timer runs backup-borg.service on {{ backup_borg_schedule }},
+          which creates the repository and then runs borgmatic
+
+    - name: Read the BorgBackup timer state
+      ansible.builtin.systemd:
+        name: backup-borg.timer
+      register: backup_borg_timer
+
+    - name: Assert the BorgBackup timer is active
+      ansible.builtin.assert:
+        that: backup_borg_timer.status.ActiveState == 'active'
+        fail_msg: "backup-borg.timer is not active ({{ backup_borg_timer.status.ActiveState }})"
+        success_msg: "backup-borg.timer is active"
+
+    # ---------------------------------------------------------------------
+    # The timer-driven backup ran, and succeeded
+    # ---------------------------------------------------------------------
+
+    # Nothing ever started backup-borg.service, so a run that has ended was
+    # triggered by the timer. `ExecMainExitTimestampMonotonic` stays at 0 until
+    # the unit's main process has exited at least once, which is the moment
+    # `Result` and `ExecMainStatus` start describing a real run rather than a
+    # unit that has never done anything.
+    - name: Wait for the timer to drive a BorgBackup run to completion (up to 300s)
+      ansible.builtin.systemd:
+        name: backup-borg.service
+      register: backup_borg_service
+      until: backup_borg_service.status.ExecMainExitTimestampMonotonic | default('0') | int > 0
+      retries: 60
+      delay: 5
+
+    - name: Retrieve the BorgBackup service log
+      ansible.builtin.command:
+        argv:
+          - journalctl
+          - --no-pager
+          - --output=cat
+          - --unit=backup-borg.service
+      register: backup_borg_log
+      changed_when: false
+
+    - name: Show the BorgBackup service log for debugging
+      when: backup_borg_debug_service_enabled | bool
+      ansible.builtin.debug:
+        var: backup_borg_log.stdout_lines
+
+    - name: Assert the timer-driven BorgBackup run succeeded
+      ansible.builtin.assert:
+        that:
+          - backup_borg_service.status.Result == 'success'
+          - backup_borg_service.status.ExecMainStatus == '0'
+        fail_msg: >-
+          backup-borg.service did not succeed
+          (Result={{ backup_borg_service.status.Result }},
+          ExecMainStatus={{ backup_borg_service.status.ExecMainStatus }}):
+          {{ backup_borg_log.stdout_lines }}
+        success_msg: "backup-borg.service exited successfully"
+
+    # Both the wrapper script and the systemd service run their container under
+    # the same name, and the service's cleanup ExecStartPre removes whatever
+    # holds it. Every command below goes through the wrapper, so the timer is
+    # stopped first rather than left free to tear a listing or an extraction
+    # down halfway through.
+    - name: Ensure the BorgBackup timer is stopped before the repository is inspected
+      ansible.builtin.systemd_service:
+        name: backup-borg.timer
+        state: stopped
+
+    - name: Wait for the BorgBackup service to be idle
+      ansible.builtin.systemd:
+        name: backup-borg.service
+      register: backup_borg_service_idle
+      until: backup_borg_service_idle.status.ActiveState in ['inactive', 'failed']
+      retries: 24
+      delay: 5
+
+    # ---------------------------------------------------------------------
+    # The borg and borgmatic doing the work are the ones the role pins
+    # ---------------------------------------------------------------------
+
+    # Run through the role's own wrapper script, which means these also stand
+    # as proof that the script is executable: `ansible.builtin.command` hands
+    # the path straight to execve, with no shell to fall back to /bin/sh.
+    - name: Ask borgmatic for its version
+      ansible.builtin.command:
+        argv:
+          - "{{ backup_borg_bin_path }}/borgmatic"
+          - --version
+      register: backup_borg_borgmatic_version_reported
+      changed_when: false
+
+    - name: Ask borg for its version
+      ansible.builtin.command:
+        argv:
+          - "{{ backup_borg_bin_path }}/borgmatic"
+          - borg
+          - debug
+          - info
+      register: backup_borg_borg_version_reported
+      changed_when: false
+
+    - name: Assert the running borg and borgmatic are the versions the role pins
+      ansible.builtin.assert:
+        that:
+          - backup_borg_borgmatic_version_reported.stdout | trim == backup_borg_defaults.backup_borg_borgmatic_version
+          - "'Borg: ' ~ backup_borg_defaults.backup_borg_borg_version in backup_borg_borg_version_reported.stdout"
+        fail_msg: >-
+          The container does not run the pinned versions
+          (borgmatic {{ backup_borg_borgmatic_version_reported.stdout | trim }},
+          {{ backup_borg_borg_version_reported.stdout_lines | select('search', '^Borg: ') | list }})
+        success_msg: >-
+          The container runs borgmatic {{ backup_borg_defaults.backup_borg_borgmatic_version }}
+          and borg {{ backup_borg_defaults.backup_borg_borg_version }}
+
+    # ---------------------------------------------------------------------
+    # An archive exists, and holds exactly what it was told to hold
+    # ---------------------------------------------------------------------
+
+    - name: List the archives in the BorgBackup repository
+      ansible.builtin.command:
+        argv:
+          - "{{ backup_borg_bin_path }}/borgmatic"
+          - rlist
+      register: backup_borg_archives
+      changed_when: false
+
+    # Everything borgmatic prints before the archives is a heading naming the
+    # repository, so the archives are the lines that carry the configured name
+    # format with its `{now:...}` placeholder filled in.
+    #
+    # The brace is matched as `[{]` rather than `\{`, because a backslash
+    # survives a YAML block scalar unchanged and would still be a backslash by
+    # the time Jinja reads the pattern.
+    - name: Pick the archives out of the listing
+      ansible.builtin.set_fact:
+        backup_borg_archive_lines: >-
+          {{
+          backup_borg_archives.stdout_lines
+          | select('search', '^' ~ (backup_borg_storage_archive_name_format | regex_replace('[{].*$', '')))
+          | list
+          }}
+
+    - name: Assert the repository holds an archive named as configured
+      ansible.builtin.assert:
+        that: backup_borg_archive_lines | length > 0
+        fail_msg: "The repository holds no archive: {{ backup_borg_archives.stdout_lines }}"
+        success_msg: "The repository holds {{ backup_borg_archive_lines | length }} archive(s)"
+
+    - name: List the contents of the latest BorgBackup archive
+      ansible.builtin.command:
+        argv:
+          - "{{ backup_borg_bin_path }}/borgmatic"
+          - list
+          - --archive
+          - latest
+      register: backup_borg_archive_contents
+      changed_when: false
+
+    - name: Assert the archive holds the source file and not the excluded one
+      ansible.builtin.assert:
+        that:
+          - >-
+            backup_borg_archive_contents.stdout_lines
+            | select('search', (backup_borg_molecule_source_path | regex_replace('^/', '')) ~ '/' ~ backup_borg_molecule_backed_up_file_name)
+            | list | length == 1
+          - >-
+            backup_borg_archive_contents.stdout_lines
+            | select('search', backup_borg_molecule_excluded_file_name)
+            | list | length == 0
+        fail_msg: "The archive does not hold what it should: {{ backup_borg_archive_contents.stdout_lines }}"
+        success_msg: >-
+          The archive holds {{ backup_borg_molecule_backed_up_file_name }} and
+          not {{ backup_borg_molecule_excluded_file_name }}
+
+    # ---------------------------------------------------------------------
+    # The backup can be restored, and what comes back is what went in
+    # ---------------------------------------------------------------------
+
+    # A backup nobody has ever restored is not a backup. The extraction goes
+    # into the role's own restore directory, which is the one place the wrapper
+    # mounts writable for exactly this.
+    - name: Extract the backed up file from the latest BorgBackup archive
+      ansible.builtin.command:
+        argv:
+          - "{{ backup_borg_bin_path }}/borgmatic"
+          - extract
+          - --archive
+          - latest
+          - --destination
+          - /restore
+          - --path
+          - >-
+            {{ (backup_borg_molecule_source_path | regex_replace('^/', ''))
+            ~ '/' ~ backup_borg_molecule_backed_up_file_name }}
+      changed_when: true
+
+    - name: Read the restored file
+      ansible.builtin.slurp:
+        src: >-
+          {{ backup_borg_restore_path ~ backup_borg_molecule_source_path
+          ~ '/' ~ backup_borg_molecule_backed_up_file_name }}
+      register: backup_borg_restored_file
+
+    - name: Assert the restored file holds what was backed up
+      ansible.builtin.assert:
+        that: (backup_borg_restored_file.content | b64decode | trim) == backup_borg_molecule_canary
+        fail_msg: >-
+          The restored file does not hold the seeded content:
+          {{ backup_borg_restored_file.content | b64decode }}
+        success_msg: "The restored file holds the seeded {{ backup_borg_molecule_canary }}"
+
+    - name: Show BorgBackup verification summary
+      ansible.builtin.debug:
+        msg:
+          - "Wrapper script: {{ backup_borg_script_lines[0] }} ({{ backup_borg_script_stat.stat.mode }})"
+          - "Timer: on {{ backup_borg_schedule }}, delay {{ backup_borg_schedule_randomized_delay_sec }}"
+          - "Last service run: Result={{ backup_borg_service.status.Result }}, status={{ backup_borg_service.status.ExecMainStatus }}"
+          - "Image: {{ backup_borg_expected_container_image | trim }}"
+          - "borgmatic: {{ backup_borg_borgmatic_version_reported.stdout | trim }}"
+          - "borg: {{ backup_borg_borg_version_reported.stdout_lines | select('search', '^Borg: ') | list | first | default('') }}"
+          - "Archives: {{ backup_borg_archive_lines }}"
+          - "Archive contents: {{ backup_borg_archive_contents.stdout_lines }}"
+          - "Restored: {{ backup_borg_restored_file.content | b64decode | trim }}"

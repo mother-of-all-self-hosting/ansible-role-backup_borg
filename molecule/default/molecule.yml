@@ -1,0 +1,148 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+dependency:
+  name: galaxy
+  options:
+    requirements-file: requirements.yml
+    force: true
+driver:
+  name: docker
+platforms:
+  - name: backup-borg-${MOLECULE_DISTRO:-ubuntu2604}-default
+    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2604}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_result_format: yaml
+  inventory:
+    group_vars:
+      all:
+        # Helper variables
+        backup_borg_debug_service_enabled: false
+
+        # Borg speaks to remote repositories over SSH, but it is equally happy
+        # with a repository that is just a directory. Using one keeps this
+        # scenario free of an sshd, a key pair and a second host, without
+        # changing anything about the backup itself: the same borgmatic
+        # invocation, the same encryption, the same archive.
+        #
+        # The role does not mount the repository into the container - a remote
+        # repository needs no mount - so the scenario adds the mount through
+        # the role's own extra-arguments hook further below.
+        backup_borg_molecule_repository_path: /borg-repo
+
+        # The directory that is handed to borg as the thing worth backing up,
+        # holding one file that has to come back out of the archive and one
+        # that the exclude patterns have to keep out of it. A backup which
+        # simply swallowed everything it was pointed at would pass the first
+        # check and fail the second.
+        backup_borg_molecule_source_path: /borg-source
+        backup_borg_molecule_backed_up_file_name: canary.txt
+        backup_borg_molecule_excluded_file_name: excluded.txt
+        backup_borg_molecule_canary: molecule-backup-borg-canary-6b30fd
+
+        # Variables for BorgBackup
+        backup_borg_uid: 1000
+        backup_borg_gid: 1000
+
+        # The container image tag is `<Postgres major>-<borg>-<borgmatic>`, and
+        # is only built that way when a Postgres version is known - otherwise
+        # the role falls back to `latest`, which pins nothing and would let this
+        # scenario pass against any version at all. Pinning it here is what
+        # makes the borg and borgmatic versions below observable in the running
+        # container.
+        backup_borg_postgres_version: "18"
+
+        # This scenario proves the filesystem side of the backup. The database
+        # hooks dump through a database server that is not part of it, and each
+        # one demands a hostname it could reach, so they are turned off rather
+        # than pointed at nothing.
+        backup_borg_postgresql_enabled: false
+        backup_borg_mariadb_enabled: false
+        backup_borg_mongodb_enabled: false
+        backup_borg_mysql_enabled: false
+
+        # Required by the role, and written to a file that borgmatic never
+        # reads here: `ssh_command` only comes into play for a repository
+        # reached over SSH, and this one is a local path.
+        backup_borg_ssh_key_private: "# molecule: no SSH key is needed for a local repository"
+
+        backup_borg_storage_encryption_passphrase: molecule-passphrase-1d47ae
+        backup_borg_location_repositories:
+          - "{{ backup_borg_molecule_repository_path }}"
+        backup_borg_location_source_directories_custom:
+          - "{{ backup_borg_molecule_source_path }}"
+        backup_borg_location_exclude_patterns_custom:
+          - "{{ backup_borg_molecule_source_path }}/{{ backup_borg_molecule_excluded_file_name }}"
+
+        # Deliberately different from the role's own defaults, so that
+        # verify.yml can tell that these knobs are what actually reached
+        # borgmatic rather than something that happened to agree with them.
+        backup_borg_storage_compression: zstd
+        backup_borg_storage_archive_name_format: molecule-backup-borg-{now:%Y-%m-%d-%H%M%S}
+        backup_borg_retention_keep_hourly: 1
+        backup_borg_retention_keep_daily: 3
+        backup_borg_retention_keep_weekly: 2
+        backup_borg_retention_keep_monthly: 5
+        backup_borg_retention_keep_yearly: 1
+
+        # The role installs a timer but never starts it (mash-playbook leaves
+        # that to com.devture.ansible.role.systemd_service_manager), so this
+        # scenario starts the timer itself and lets it be the only thing that
+        # ever triggers a backup. A schedule this frequent, with the randomized
+        # delay taken out, is nothing a real deployment would use, but it is
+        # what makes the timer -> service -> borgmatic chain observable within
+        # a test run.
+        backup_borg_schedule: "*-*-* *:*:00/15"
+        backup_borg_schedule_randomized_delay_sec: 0
+
+        # The repository lives on the host filesystem, and the role has no
+        # notion of mounting one, so it is handed to the container through the
+        # extra-arguments hook that the role exposes for exactly this kind of
+        # deployment-specific need. Both the backup itself and the
+        # repository-creating ExecStartPre pick these up.
+        backup_borg_container_extra_arguments_custom:
+          - "--mount type=bind,src={{ backup_borg_molecule_repository_path }},dst={{ backup_borg_molecule_repository_path }}"
+
+        # Pinned to literal values, because verify.yml runs as a separate play,
+        # where the role's defaults are out of scope, and these are derived
+        # from other variables rather than being literals themselves.
+        backup_borg_identifier: backup-borg
+        backup_borg_base_path: /backup-borg
+        backup_borg_bin_path: /backup-borg/bin
+        backup_borg_config_path: /backup-borg/config
+        backup_borg_restore_path: /backup-borg/restored
+        backup_borg_container_network: backup-borg
+  env:
+    # Workaround for https://github.com/ansible/molecule/issues/4391
+    ANSIBLE_ROLES_PATH: ${MOLECULE_PROJECT_DIRECTORY}/..:/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:~/.ansible/roles
+scenario:
+  # See: https://docs.ansible.com/projects/molecule/configuration/?h=test_sequence#scenario
+  #
+  # Idempotence is left out: converge seeds a source directory, creates the
+  # repository directory and starts a timer, none of which is a no-op on a
+  # second run.
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - side_effect
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  name: ansible

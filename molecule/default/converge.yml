@@ -1,0 +1,79 @@
+# SPDX-FileCopyrightText: 2026 Slavi Pantaleev
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+---
+# Everything that needs the supporting roles' variables in scope lives in this
+# one play, because `public: true` exposes them to the rest of the play only.
+- name: Install BorgBackup for Molecule tests
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: Include supporting roles for BorgBackup Molecule tests
+      ansible.builtin.include_role:
+        name: "{{ role_name }}"
+        public: true
+      loop:
+        - com.devture.ansible.role.playbook_help
+        - com.devture.ansible.role.systemd_docker_base
+      loop_control:
+        loop_var: role_name
+
+    # -----------------------------------------------------------------
+    # Something worth backing up, and something that must not be
+    # -----------------------------------------------------------------
+
+    - name: Ensure the Molecule source directory exists
+      ansible.builtin.file:
+        path: "{{ backup_borg_molecule_source_path }}"
+        state: directory
+        owner: "{{ backup_borg_uid }}"
+        group: "{{ backup_borg_gid }}"
+        mode: "0750"
+
+    - name: Ensure the Molecule source directory holds a file to back up
+      ansible.builtin.copy:
+        dest: "{{ backup_borg_molecule_source_path }}/{{ backup_borg_molecule_backed_up_file_name }}"
+        content: "{{ backup_borg_molecule_canary }}\n"
+        owner: "{{ backup_borg_uid }}"
+        group: "{{ backup_borg_gid }}"
+        mode: "0640"
+
+    - name: Ensure the Molecule source directory holds a file to leave out
+      ansible.builtin.copy:
+        dest: "{{ backup_borg_molecule_source_path }}/{{ backup_borg_molecule_excluded_file_name }}"
+        content: "{{ backup_borg_molecule_canary }}-excluded\n"
+        owner: "{{ backup_borg_uid }}"
+        group: "{{ backup_borg_gid }}"
+        mode: "0640"
+
+    # The repository is created by the service's own `borgmatic rcreate`
+    # ExecStartPre, which runs as `backup_borg_uid:backup_borg_gid` with every
+    # capability dropped. It can only do so in a directory that this user owns.
+    - name: Ensure the Molecule repository directory exists
+      ansible.builtin.file:
+        path: "{{ backup_borg_molecule_repository_path }}"
+        state: directory
+        owner: "{{ backup_borg_uid }}"
+        group: "{{ backup_borg_gid }}"
+        mode: "0750"
+
+    - name: Include the BorgBackup role for Molecule tests
+      ansible.builtin.include_role:
+        name: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') | basename }}"
+
+# The timer is the only thing that triggers a backup: nothing here starts the
+# service, so an archive in the repository proves the whole timer -> service ->
+# borgmatic chain, which is what a deployment actually relies on.
+- name: Ensure the BorgBackup timer is started
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Ensure the BorgBackup timer is started
+      ansible.builtin.systemd_service:
+        name: backup-borg.timer
+        state: started
+        enabled: true
+        daemon_reload: true
