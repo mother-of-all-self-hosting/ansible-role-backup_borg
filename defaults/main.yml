@@ -26,9 +26,9 @@ backup_borg_alpine_version: edge
 # built from (see `backup_borg_version` above), and the ones that the release
 # tags of this role are named after. Renovate rewrites them in place; a variable
 # that merely interpolates them is never touched.
-# renovate: datasource=github-releases depName=borgbackup/borg
+# renovate: datasource=github-releases depName=borgbackup/borg versioning=semver
 backup_borg_borg_version: 1.4.5
-# renovate: datasource=github-releases depName=borgmatic-collective/borgmatic
+# renovate: datasource=github-releases depName=borgmatic-collective/borgmatic versioning=semver
 backup_borg_borgmatic_version: 2.1.7
 
 backup_borg_postgres_version: ""
