@@ -10,10 +10,10 @@
   become: true
   gather_facts: false
   tasks:
-    # Role defaults are not in scope here, but the two versions that Renovate
-    # bumps live in them and are what the running borg and borgmatic are
-    # checked against below.
-    - name: Load the BorgBackup role defaults
+    # The role is not included in this playbook, so its defaults are not in
+    # scope. Reading defaults/main.yml directly ties the version assertion
+    # below.
+    - name: Load the role defaults
       ansible.builtin.include_vars:
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
         name: backup_borg_defaults
