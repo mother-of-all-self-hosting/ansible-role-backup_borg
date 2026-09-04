@@ -364,15 +364,15 @@
           {{ backup_borg_restored_file.content | b64decode }}
         success_msg: "The restored file holds the seeded {{ backup_borg_molecule_canary }}"
 
-    - name: Show BorgBackup verification summary
+    - name: Show the BorgBackup verification summary
       ansible.builtin.debug:
         msg:
-          - "Wrapper script: {{ backup_borg_script_lines[0] }} ({{ backup_borg_script_stat.stat.mode }})"
-          - "Timer: on {{ backup_borg_schedule }}, delay {{ backup_borg_schedule_randomized_delay_sec }}"
-          - "Last service run: Result={{ backup_borg_service.status.Result }}, status={{ backup_borg_service.status.ExecMainStatus }}"
-          - "Image: {{ backup_borg_expected_container_image | trim }}"
-          - "borgmatic: {{ backup_borg_borgmatic_version_reported.stdout | trim }}"
-          - "borg: {{ backup_borg_borg_version_reported.stdout_lines | select('search', '^Borg: ') | list | first | default('') }}"
-          - "Archives: {{ backup_borg_archive_lines }}"
-          - "Archive contents: {{ backup_borg_archive_contents.stdout_lines }}"
-          - "Restored: {{ backup_borg_restored_file.content | b64decode | trim }}"
+          - "BorgBackup wrapper script: {{ backup_borg_script_lines[0] }} ({{ backup_borg_script_stat.stat.mode }})"
+          - "BorgBackup timer: on {{ backup_borg_schedule }}, delay {{ backup_borg_schedule_randomized_delay_sec }}"
+          - "BorgBackup last service run: Result={{ backup_borg_service.status.Result }}, status={{ backup_borg_service.status.ExecMainStatus }}"
+          - "BorgBackup image: {{ backup_borg_expected_container_image | trim }}"
+          - "BorgBackup borgmatic: {{ backup_borg_borgmatic_version_reported.stdout | trim }}"
+          - "BorgBackup borg: {{ backup_borg_borg_version_reported.stdout_lines | select('search', '^Borg: ') | list | first | default('') }}"
+          - "BorgBackup archives: {{ backup_borg_archive_lines }}"
+          - "BorgBackup archive contents: {{ backup_borg_archive_contents.stdout_lines }}"
+          - "BorgBackup restored: {{ backup_borg_restored_file.content | b64decode | trim }}"
