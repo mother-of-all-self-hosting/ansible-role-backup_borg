@@ -39,7 +39,7 @@
         src: "{{ backup_borg_bin_path }}/borgmatic"
       register: backup_borg_script
 
-    - name: Make sense of the BorgBackup wrapper script
+    - name: Parse the BorgBackup wrapper script
       ansible.builtin.set_fact:
         backup_borg_script_lines: "{{ (backup_borg_script.content | b64decode).splitlines() }}"
 
@@ -70,7 +70,7 @@
         src: "{{ backup_borg_config_path }}/config.yaml"
       register: backup_borg_configuration_file
 
-    - name: Make sense of the BorgBackup borgmatic configuration file
+    - name: Parse the BorgBackup borgmatic configuration file
       ansible.builtin.set_fact:
         backup_borg_configuration_parsed: "{{ backup_borg_configuration_file.content | b64decode | from_yaml }}"
 
