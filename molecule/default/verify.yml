@@ -236,7 +236,7 @@
     # Run through the role's own wrapper script, which means these also stand
     # as proof that the script is executable: `ansible.builtin.command` hands
     # the path straight to execve, with no shell to fall back to /bin/sh.
-    - name: Ask borgmatic for its version
+    - name: Query the version of borgmatic
       ansible.builtin.command:
         argv:
           - "{{ backup_borg_bin_path }}/borgmatic"
@@ -244,7 +244,7 @@
       register: backup_borg_borgmatic_version_reported
       changed_when: false
 
-    - name: Ask borg for its version
+    - name: Query the version of borg
       ansible.builtin.command:
         argv:
           - "{{ backup_borg_bin_path }}/borgmatic"
