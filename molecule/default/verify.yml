@@ -157,7 +157,7 @@
           which creates the repository and then runs borgmatic
 
     - name: Read the BorgBackup timer state
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: backup-borg.timer
       register: backup_borg_timer
 
@@ -177,14 +177,14 @@
     # `Result` and `ExecMainStatus` start describing a real run rather than a
     # unit that has never done anything.
     - name: Wait for the timer to drive a BorgBackup run to completion (up to 300s)
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: backup-borg.service
       register: backup_borg_service
       until: backup_borg_service.status.ExecMainExitTimestampMonotonic | default('0') | int > 0
       retries: 60
       delay: 5
 
-    - name: Retrieve the BorgBackup service log
+    - name: Retrieve the BorgBackup systemd service log
       ansible.builtin.command:
         argv:
           - journalctl
@@ -194,7 +194,7 @@
       register: backup_borg_log
       changed_when: false
 
-    - name: Show the BorgBackup service log for debugging
+    - name: Retrieve the BorgBackup systemd service log for debugging
       when: backup_borg_debug_service_enabled | bool
       ansible.builtin.debug:
         var: backup_borg_log.stdout_lines
@@ -222,7 +222,7 @@
         state: stopped
 
     - name: Wait for the BorgBackup service to be idle
-      ansible.builtin.systemd:
+      ansible.builtin.systemd_service:
         name: backup-borg.service
       register: backup_borg_service_idle
       until: backup_borg_service_idle.status.ActiveState in ['inactive', 'failed']
