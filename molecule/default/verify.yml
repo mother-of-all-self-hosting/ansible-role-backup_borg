@@ -186,11 +186,7 @@
 
     - name: Retrieve the BorgBackup systemd service log
       ansible.builtin.command:
-        argv:
-          - journalctl
-          - --no-pager
-          - --output=cat
-          - --unit=backup-borg.service
+        cmd: journalctl --no-pager --output=cat --unit=backup-borg.service
       register: backup_borg_log
       changed_when: false
 
@@ -238,19 +234,13 @@
     # the path straight to execve, with no shell to fall back to /bin/sh.
     - name: Query the version of borgmatic
       ansible.builtin.command:
-        argv:
-          - "{{ backup_borg_bin_path }}/borgmatic"
-          - --version
+        cmd: "{{ backup_borg_bin_path }}/borgmatic --version"
       register: backup_borg_borgmatic_version_reported
       changed_when: false
 
     - name: Query the version of borg
       ansible.builtin.command:
-        argv:
-          - "{{ backup_borg_bin_path }}/borgmatic"
-          - borg
-          - debug
-          - info
+        cmd: "{{ backup_borg_bin_path }}/borgmatic borg debug info"
       register: backup_borg_borg_version_reported
       changed_when: false
 
@@ -273,9 +263,7 @@
 
     - name: List the archives in the BorgBackup repository
       ansible.builtin.command:
-        argv:
-          - "{{ backup_borg_bin_path }}/borgmatic"
-          - rlist
+        cmd: "{{ backup_borg_bin_path }}/borgmatic rlist"
       register: backup_borg_archives
       changed_when: false
 
