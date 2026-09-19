@@ -83,19 +83,27 @@ backup_borg_container_cleanup_timeout_seconds: "{{ devture_systemd_docker_base_c
 # Controls the delay between pre-start cleanup retries.
 backup_borg_container_cleanup_retry_delay_seconds: "{{ devture_systemd_docker_base_container_cleanup_retry_delay_seconds }}"
 
+# Controls how long each individual `docker` call in the pre-start cleanup loop may run
+# before being killed. These calls are bookkeeping (stop/remove/inspect a container, ping
+# the daemon) and are expected to be fast regardless of how large or slow the backup itself
+# is, so bounding them - unlike the backup run - does not risk cutting off a legitimate
+# backup. Without this, a wedged Docker daemon call can hang the cleanup step forever,
+# which then blocks every future scheduled backup, since nothing else would ever unstick it.
+backup_borg_container_cleanup_docker_call_timeout_seconds: 15
+
 # Shell command used in the systemd pre-start phase to deterministically remove a stale
 # container and wait until Docker releases its name.
 backup_borg_container_cleanup_command: |
   i=0;
   while [ "$i" -lt {{ backup_borg_container_cleanup_timeout_seconds }} ]; do
-  {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ backup_borg_container_stop_grace_time_seconds }} {{ backup_borg_identifier }} >/dev/null 2>&1 || true;
-  {{ devture_systemd_docker_base_host_command_docker }} rm -f {{ backup_borg_identifier }} >/dev/null 2>&1 || true;
-  if {{ devture_systemd_docker_base_host_command_docker }} container inspect {{ backup_borg_identifier }} >/dev/null 2>&1; then
+  timeout {{ backup_borg_container_cleanup_docker_call_timeout_seconds }} {{ devture_systemd_docker_base_host_command_docker }} stop -t {{ backup_borg_container_stop_grace_time_seconds }} {{ backup_borg_identifier }} >/dev/null 2>&1 || true;
+  timeout {{ backup_borg_container_cleanup_docker_call_timeout_seconds }} {{ devture_systemd_docker_base_host_command_docker }} rm -f {{ backup_borg_identifier }} >/dev/null 2>&1 || true;
+  if timeout {{ backup_borg_container_cleanup_docker_call_timeout_seconds }} {{ devture_systemd_docker_base_host_command_docker }} container inspect {{ backup_borg_identifier }} >/dev/null 2>&1; then
   i=$((i + 1));
   sleep {{ backup_borg_container_cleanup_retry_delay_seconds }};
   continue;
   fi;
-  if {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
+  if timeout {{ backup_borg_container_cleanup_docker_call_timeout_seconds }} {{ devture_systemd_docker_base_host_command_docker }} info >/dev/null 2>&1; then
   exit 0;
   fi;
   echo "Failed to query Docker daemon while cleaning up {{ backup_borg_identifier }}" >&2;

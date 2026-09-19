@@ -176,13 +176,40 @@
     # the unit's main process has exited at least once, which is the moment
     # `Result` and `ExecMainStatus` start describing a real run rather than a
     # unit that has never done anything.
-    - name: Wait for the timer to drive a BorgBackup run to completion (up to 300s)
-      ansible.builtin.systemd_service:
-        name: backup-borg.service
-      register: backup_borg_service
-      until: backup_borg_service.status.ExecMainExitTimestampMonotonic | default('0') | int > 0
-      retries: 60
-      delay: 5
+    # A run that never completes leaves nothing behind for the assertions below
+    # to report, since they only run once this succeeds. The rescue block here
+    # exists solely so that a future occurrence of this failure comes with the
+    # service log and container state attached, rather than just a timeout.
+    - name: Wait for the timer to drive a BorgBackup run to completion, capturing diagnostics if it never does
+      block:
+        - name: Wait for the timer to drive a BorgBackup run to completion (up to 300s)
+          ansible.builtin.systemd_service:
+            name: backup-borg.service
+          register: backup_borg_service
+          until: backup_borg_service.status.ExecMainExitTimestampMonotonic | default('0') | int > 0
+          retries: 60
+          delay: 5
+      rescue:
+        - name: Retrieve the BorgBackup systemd service log for a run that never completed
+          ansible.builtin.command:
+            cmd: journalctl --no-pager --output=cat --unit=backup-borg.service
+          register: backup_borg_log_incomplete
+          changed_when: false
+
+        - name: Retrieve the state of the BorgBackup container for a run that never completed
+          ansible.builtin.command:
+            cmd: "docker ps -a --filter name={{ backup_borg_identifier }}"
+          register: backup_borg_container_state_incomplete
+          changed_when: false
+
+        - name: Fail with diagnostics for the BorgBackup run that never completed
+          ansible.builtin.fail:
+            msg: >-
+              backup-borg.service never finished a run within the wait window
+              (ActiveState={{ backup_borg_service.status.ActiveState | default('unknown') }},
+              ExecMainStartTimestamp={{ backup_borg_service.status.ExecMainStartTimestamp | default('unknown') }}).
+              Container state: {{ backup_borg_container_state_incomplete.stdout_lines }}.
+              Service log: {{ backup_borg_log_incomplete.stdout_lines }}
 
     - name: Retrieve the BorgBackup systemd service log
       ansible.builtin.command:
