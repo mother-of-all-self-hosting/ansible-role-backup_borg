@@ -61,6 +61,13 @@ backup_borg_container_extra_arguments: "{{ backup_borg_container_extra_arguments
 backup_borg_container_extra_arguments_auto: []
 backup_borg_container_extra_arguments_custom: []
 
+# A list of extra arguments to pass to the process inside the container
+# Example: ['--SOME_ARGUMENT']
+backup_borg_process_extra_arguments: "{{ backup_borg_process_extra_arguments_auto + backup_borg_process_extra_arguments_custom }}"
+backup_borg_process_extra_arguments_auto:
+  - "sh -c 'borgmatic rcreate --encryption {{ backup_borg_encryption }}'"
+backup_borg_process_extra_arguments_custom: []
+
 # List of systemd services that the BorgBackup systemd service depends on
 backup_borg_systemd_required_services_list: "{{ backup_borg_systemd_required_services_list_default + backup_borg_systemd_required_services_list_auto + backup_borg_systemd_required_services_list_custom }}"
 backup_borg_systemd_required_services_list_default: "{{ [devture_systemd_docker_base_docker_service_name] if devture_systemd_docker_base_docker_service_name else [] }}"
