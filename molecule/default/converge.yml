@@ -50,9 +50,10 @@
         group: "{{ backup_borg_gid }}"
         mode: "0640"
 
-    # The repository is created by the service's own `borgmatic rcreate`
-    # ExecStartPre, which runs as `backup_borg_uid:backup_borg_gid` with every
-    # capability dropped. It can only do so in a directory that this user owns.
+    # Owned by an unprivileged user rather than root, to prove that both the
+    # service's `borgmatic rcreate` ExecStartPre and the backup itself - which
+    # run as root with CAP_DAC_OVERRIDE precisely so that repository ownership
+    # doesn't matter - can read and write here regardless of who owns it.
     - name: Ensure the Molecule repository directory exists
       ansible.builtin.file:
         path: "{{ backup_borg_molecule_repository_path }}"
