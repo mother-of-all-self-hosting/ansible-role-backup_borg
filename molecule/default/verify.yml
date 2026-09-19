@@ -171,31 +171,34 @@
     # The timer-driven backup ran, and succeeded
     # ---------------------------------------------------------------------
 
-    # Nothing ever started backup-borg.service, so a run that has ended was
-    # triggered by the timer. `ExecMainExitTimestampMonotonic` stays at 0 until
-    # the unit's main process has exited at least once, which is the moment
-    # `Result` and `ExecMainStatus` start describing a real run rather than a
-    # unit that has never done anything.
+    # `ExecMainExitTimestampMonotonic` (and every other "current invocation"
+    # property) resets to 0 the moment a *new* activation begins, and this
+    # timer refires every 15s with no randomized delay. Polling that property
+    # every 5s is prone to aliasing against that 15s cycle and missing the
+    # brief window it holds a nonzero value in, even while the service
+    # completes successfully run after run - which is exactly what happened
+    # here: dozens of clean "Deactivated successfully" cycles in the journal,
+    # yet every single poll of the live status caught it mid-run.
+    #
+    # The journal doesn't have that problem: it is append-only, so the first
+    # completed run is visible in it forever, however the polling happens to
+    # land relative to the timer.
+    #
     # A run that never completes leaves nothing behind for the assertions below
     # to report, since they only run once this succeeds. The rescue block here
     # exists solely so that a future occurrence of this failure comes with the
     # service log and container state attached, rather than just a timeout.
-    - name: Wait for the timer to drive a BorgBackup run to completion, capturing diagnostics if it never does
+    - name: Wait for the timer to drive at least one BorgBackup run to completion, capturing diagnostics if it never does
       block:
-        - name: Wait for the timer to drive a BorgBackup run to completion (up to 300s)
-          ansible.builtin.systemd_service:
-            name: backup-borg.service
-          register: backup_borg_service
-          until: backup_borg_service.status.ExecMainExitTimestampMonotonic | default('0') | int > 0
-          retries: 60
-          delay: 5
-      rescue:
-        - name: Retrieve the BorgBackup systemd service log for a run that never completed
+        - name: Wait for the timer to drive at least one BorgBackup run to completion (up to 300s)
           ansible.builtin.command:
             cmd: journalctl --no-pager --output=cat --unit=backup-borg.service
-          register: backup_borg_log_incomplete
+          register: backup_borg_log
+          until: "'backup-borg.service: Deactivated successfully.' in backup_borg_log.stdout"
+          retries: 60
+          delay: 5
           changed_when: false
-
+      rescue:
         - name: Retrieve the state of the BorgBackup container for a run that never completed
           ansible.builtin.command:
             cmd: "docker ps -a --filter name={{ backup_borg_identifier }}"
@@ -205,40 +208,22 @@
         - name: Fail with diagnostics for the BorgBackup run that never completed
           ansible.builtin.fail:
             msg: >-
-              backup-borg.service never finished a run within the wait window
-              (ActiveState={{ backup_borg_service.status.ActiveState | default('unknown') }},
-              ExecMainStartTimestamp={{ backup_borg_service.status.ExecMainStartTimestamp | default('unknown') }}).
+              backup-borg.service never finished a run within the wait window.
               Container state: {{ backup_borg_container_state_incomplete.stdout_lines }}.
-              Service log: {{ backup_borg_log_incomplete.stdout_lines }}
-
-    - name: Retrieve the BorgBackup systemd service log
-      ansible.builtin.command:
-        cmd: journalctl --no-pager --output=cat --unit=backup-borg.service
-      register: backup_borg_log
-      changed_when: false
+              Service log: {{ backup_borg_log.stdout_lines | default([]) }}
 
     - name: Retrieve the BorgBackup systemd service log for debugging
       when: backup_borg_debug_service_enabled | bool
       ansible.builtin.debug:
         var: backup_borg_log.stdout_lines
 
-    - name: Assert the timer-driven BorgBackup run succeeded
-      ansible.builtin.assert:
-        that:
-          - backup_borg_service.status.Result == 'success'
-          - backup_borg_service.status.ExecMainStatus == '0'
-        fail_msg: >-
-          backup-borg.service did not succeed
-          (Result={{ backup_borg_service.status.Result }},
-          ExecMainStatus={{ backup_borg_service.status.ExecMainStatus }}):
-          {{ backup_borg_log.stdout_lines }}
-        success_msg: "backup-borg.service exited successfully"
-
     # Both the wrapper script and the systemd service run their container under
     # the same name, and the service's cleanup ExecStartPre removes whatever
     # holds it. Every command below goes through the wrapper, so the timer is
     # stopped first rather than left free to tear a listing or an extraction
-    # down halfway through.
+    # down halfway through. Stopping it here also settles the service's status,
+    # which the assertion right after this needs to read a value that isn't
+    # about to be reset by the next 15s-scheduled run.
     - name: Ensure the BorgBackup timer is stopped before the repository is inspected
       ansible.builtin.systemd_service:
         name: backup-borg.timer
@@ -251,6 +236,18 @@
       until: backup_borg_service_idle.status.ActiveState in ['inactive', 'failed']
       retries: 24
       delay: 5
+
+    - name: Assert the timer-driven BorgBackup run succeeded
+      ansible.builtin.assert:
+        that:
+          - backup_borg_service_idle.status.Result == 'success'
+          - backup_borg_service_idle.status.ExecMainStatus == '0'
+        fail_msg: >-
+          backup-borg.service did not succeed
+          (Result={{ backup_borg_service_idle.status.Result }},
+          ExecMainStatus={{ backup_borg_service_idle.status.ExecMainStatus }}):
+          {{ backup_borg_log.stdout_lines }}
+        success_msg: "backup-borg.service exited successfully"
 
     # ---------------------------------------------------------------------
     # The borg and borgmatic doing the work are the ones the role pins
