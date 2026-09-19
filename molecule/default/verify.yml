@@ -381,7 +381,7 @@
         msg:
           - "BorgBackup wrapper script: {{ backup_borg_script_lines[0] }} ({{ backup_borg_script_stat.stat.mode }})"
           - "BorgBackup timer: on {{ backup_borg_schedule }}, delay {{ backup_borg_schedule_randomized_delay_sec }}"
-          - "BorgBackup last service run: Result={{ backup_borg_service.status.Result }}, status={{ backup_borg_service.status.ExecMainStatus }}"
+          - "BorgBackup last service run: Result={{ backup_borg_service_idle.status.Result }}, status={{ backup_borg_service_idle.status.ExecMainStatus }}"
           - "BorgBackup image: {{ backup_borg_expected_container_image | trim }}"
           - "BorgBackup borgmatic: {{ backup_borg_borgmatic_version_reported.stdout | trim }}"
           - "BorgBackup borg: {{ backup_borg_borg_version_reported.stdout_lines | select('search', '^Borg: ') | list | first | default('') }}"
