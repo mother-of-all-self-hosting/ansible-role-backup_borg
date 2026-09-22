@@ -99,7 +99,7 @@ backup_borg_ssh_key_private: |
 ########################################################################
 ```
 
-**Note**: `REPO` will be initialized on backup start, for example: `matrix`. See [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls) for the syntax.
+**Note**: `REPO` will be initialized on backup start, for example: `matrix`. Refer to [Remote repositories](https://borgbackup.readthedocs.io/en/stable/usage/general.html#repository-urls) for the syntax.
 
 ### Set backup archive name (optional)
 
