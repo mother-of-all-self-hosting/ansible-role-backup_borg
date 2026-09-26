@@ -29,7 +29,7 @@ backup_borg_alpine_version: edge
 # renovate: datasource=github-releases depName=borgbackup/borg versioning=semver
 backup_borg_borg_version: 1.4.5
 # renovate: datasource=github-releases depName=borgmatic-collective/borgmatic versioning=semver
-backup_borg_borgmatic_version: 2.1.8
+backup_borg_borgmatic_version: 2.1.9
 
 backup_borg_postgres_version: ""
 
