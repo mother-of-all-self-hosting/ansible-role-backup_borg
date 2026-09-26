@@ -46,20 +46,17 @@ scenario() {
 	git config user.name 'Test'
 	git config commit.gpgsign false
 
-	# The surrounding lines are the ones from the real defaults/main.yml: the
-	# Renovate annotations above the two versions, and around them the
-	# variables that interpolate them rather than carrying them. Only the plain
-	# literals are a usable source for the tag, so the rest are here to be
-	# ignored - a refactor that started reading one of them would leave this
-	# printing Jinja and every expectation below would stop being met.
+	# The surrounding lines mirror defaults/main.yml: Renovate rewrites the
+	# literal image pair while the component versions and image tag interpolate
+	# it. Reading a derived variable would print Jinja instead of a release tag.
 	cat > defaults/main.yml <<-'DEFAULTS'
 		backup_borg_version: "{{ (backup_borg_postgres_version ~ '-' ~ backup_borg_borg_version ~ '-' ~ backup_borg_borgmatic_version) if backup_borg_postgres_version else 'latest' }}"
 		backup_borg_alpine_version: edge
 
-		# renovate: datasource=github-releases depName=borgbackup/borg
-		backup_borg_borg_version: 1.4.4
-		# renovate: datasource=github-releases depName=borgmatic-collective/borgmatic
-		backup_borg_borgmatic_version: 2.1.6
+		# renovate: datasource=docker depName=ghcr.io/etkecc/borgmatic versioning=loose
+		backup_borg_image_version: 1.4.4-2.1.6
+		backup_borg_borg_version: "{{ backup_borg_image_version.split('-')[0] }}"
+		backup_borg_borgmatic_version: "{{ backup_borg_image_version.split('-')[1] }}"
 
 		backup_borg_postgres_version: ""
 		backup_borg_container_image: "{{ backup_borg_container_image_registry_prefix }}etkecc/borgmatic:{{ backup_borg_version }}"
@@ -107,17 +104,18 @@ expect() {
 	fi
 }
 
-bump_borg="sed -i 's|backup_borg_borg_version: 1.4.4|backup_borg_borg_version: 1.4.5|' defaults/main.yml"
-revert_borg="sed -i 's|backup_borg_borg_version: 1.4.5|backup_borg_borg_version: 1.4.4|' defaults/main.yml"
-bump_borgmatic="sed -i 's|backup_borg_borgmatic_version: 2.1.6|backup_borg_borgmatic_version: 2.1.7|' defaults/main.yml"
+bump_borg="sed -i 's|backup_borg_image_version: 1.4.4-2.1.6|backup_borg_image_version: 1.4.5-2.1.6|' defaults/main.yml"
+revert_borg="sed -i 's|backup_borg_image_version: 1.4.5-2.1.6|backup_borg_image_version: 1.4.4-2.1.6|' defaults/main.yml"
+bump_borgmatic="sed -i 's|backup_borg_image_version: 1.4.4-2.1.6|backup_borg_image_version: 1.4.4-2.1.7|' defaults/main.yml"
+bump_borgmatic_after_borg="sed -i 's|backup_borg_image_version: 1.4.5-2.1.6|backup_borg_image_version: 1.4.5-2.1.7|' defaults/main.yml"
 edit_task="printf 'a task\n' >> tasks/main.yml"
 edit_template="printf 'a line\n' >> templates/config.yaml.j2"
 edit_readme="printf 'documentation\n' >> README.md"
 edit_script="printf '# a comment\n' >> bin/compute-next-tag.sh"
 edit_derived_variable="sed -i 's|etkecc/borgmatic:|etkecc/borgmatic-renamed:|' defaults/main.yml"
 
-# The two merge orders below apply the same updates and must each end up with
-# every update released exactly once, whichever order they arrive in.
+# The two merge orders below apply the same pair update and must each end up
+# with every update released exactly once, whichever order they arrive in.
 
 scenario 'A borg bump merged before other role changes'
 expect 'borg bump'  v1.4.5-2.1.6-0 "$(merge "$bump_borg")"
@@ -135,7 +133,7 @@ expect 'task edit'      v1.4.4-2.1.7-1 "$(merge "$edit_task")"
 
 scenario 'Both halves bumped, one after the other'
 expect 'borg bump'      v1.4.5-2.1.6-0 "$(merge "$bump_borg")"
-expect 'borgmatic bump' v1.4.5-2.1.7-0 "$(merge "$bump_borgmatic")"
+expect 'borgmatic bump' v1.4.5-2.1.7-0 "$(merge "$bump_borgmatic_after_borg")"
 
 # The image reference is built from the two versions rather than carrying one,
 # so changing it releases as a change to the role, under the unchanged pair.

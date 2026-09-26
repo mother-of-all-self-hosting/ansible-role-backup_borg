@@ -3,5 +3,14 @@
   "extends": [
     "github>mother-of-all-self-hosting/renovate-config#v1.1.0",
     "github>mother-of-all-self-hosting/renovate-config//patch-automerge#v1.1.0"
+  ],
+  "packageRules": [
+    {
+      "description": ["Follow published PostgreSQL image tags and require review of combined Borg/borgmatic updates"],
+      "matchManagers": ["custom.regex"],
+      "matchDepNames": ["ghcr.io/etkecc/borgmatic"],
+      "extractVersion": "^(?:[0-9]+)-(?<version>\\d+\\.\\d+\\.\\d+-\\d+\\.\\d+\\.\\d+)$",
+      "automerge": false
+    }
   ]
 }

@@ -30,6 +30,12 @@ Unless you disable the Postgres-backup support, make sure that the Postgres vers
 
 An alternative solution for backing up the Postgres database is [Postgres backup](https://github.com/mother-of-all-self-hosting/ansible-role-postgres-backup). If you decide to go with another solution, you can disable Postgres-backup support for BorgBackup using the `backup_borg_postgresql_enabled` variable.
 
+### Image versions
+
+The default `backup_borg_image_version` selects a Borg/borgmatic pair, such as `1.4.5-2.1.9`. With Postgres v18, the role pulls `ghcr.io/etkecc/borgmatic:18-1.4.5-2.1.9`. Without a detected Postgres version, it continues to pull the moving `latest` tag, which uses the image's default Postgres client. The version pair does not pin that fallback.
+
+The role's Renovate updates follow published Postgres-prefixed GHCR image tags. CI checks that the selected pair exists for every supported Postgres version before merge. If you override `backup_borg_borg_version`, `backup_borg_borgmatic_version`, or `backup_borg_version` yourself, choose a tag that exists in the registry.
+
 ### Create a new SSH key
 
 Run the command below on any machine to create a new SSH key:

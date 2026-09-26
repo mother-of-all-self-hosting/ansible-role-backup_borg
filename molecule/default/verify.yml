@@ -18,12 +18,17 @@
         file: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/defaults/main.yml"
         name: backup_borg_defaults
 
+    - name: Determine the versions pinned by the role
+      ansible.builtin.set_fact:
+        backup_borg_expected_borg_version: "{{ backup_borg_defaults.backup_borg_image_version.split('-')[0] }}"
+        backup_borg_expected_borgmatic_version: "{{ backup_borg_defaults.backup_borg_image_version.split('-')[1] }}"
+
     - name: Determine what the BorgBackup container image reference should be
       ansible.builtin.set_fact:
         backup_borg_expected_container_image: >-
           ghcr.io/etkecc/borgmatic:{{ backup_borg_postgres_version }}-{{
-          backup_borg_defaults.backup_borg_borg_version }}-{{
-          backup_borg_defaults.backup_borg_borgmatic_version }}
+          backup_borg_expected_borg_version }}-{{
+          backup_borg_expected_borgmatic_version }}
 
     # ---------------------------------------------------------------------
     # The borgmatic wrapper script is something the kernel will execute
@@ -271,15 +276,15 @@
     - name: Assert the running borg and borgmatic are the versions the role pins
       ansible.builtin.assert:
         that:
-          - backup_borg_borgmatic_version_reported.stdout | trim == backup_borg_defaults.backup_borg_borgmatic_version
-          - "'Borg: ' ~ backup_borg_defaults.backup_borg_borg_version in backup_borg_borg_version_reported.stdout"
+          - backup_borg_borgmatic_version_reported.stdout | trim == backup_borg_expected_borgmatic_version
+          - "'Borg: ' ~ backup_borg_expected_borg_version in backup_borg_borg_version_reported.stdout"
         fail_msg: >-
           The container does not run the pinned versions
           (borgmatic {{ backup_borg_borgmatic_version_reported.stdout | trim }},
           {{ backup_borg_borg_version_reported.stdout_lines | select('search', '^Borg: ') | list }})
         success_msg: >-
-          The container runs borgmatic {{ backup_borg_defaults.backup_borg_borgmatic_version }}
-          and borg {{ backup_borg_defaults.backup_borg_borg_version }}
+          The container runs borgmatic {{ backup_borg_expected_borgmatic_version }}
+          and borg {{ backup_borg_expected_borg_version }}
 
     # ---------------------------------------------------------------------
     # An archive exists, and holds exactly what it was told to hold

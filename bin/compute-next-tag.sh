@@ -21,12 +21,9 @@
 # the order in which pull requests get merged, and lets any change to the role
 # (bugfix, feature, dependency bump) release itself without a human tagging.
 #
-# `backup_borg_borg_version` and `backup_borg_borgmatic_version` are the plain
-# literals that Renovate's annotations in defaults/main.yml are attached to, and
-# the ones the container image tag is built from. A variable that merely
-# interpolates them (`backup_borg_version`, `backup_borg_container_image`) is
-# never rewritten by Renovate, and reading one would leave this printing Jinja
-# rather than a version.
+# `backup_borg_image_version` is the literal pair Renovate rewrites in
+# defaults/main.yml. The individual component versions and image reference
+# interpolate it, so reading those would leave this printing Jinja.
 
 set -euo pipefail
 
@@ -50,18 +47,16 @@ read_version() {
 	sed -nE "s|^$1:[[:space:]]*\"?([^\"[:space:]]+)\"?.*\$|\1|p" "$defaults_path" | head -n1
 }
 
-borg_version="$(read_version 'backup_borg_borg_version')"
-borgmatic_version="$(read_version 'backup_borg_borgmatic_version')"
-
-if [ -z "$borg_version" ] || [ -z "$borgmatic_version" ]; then
-	echo >&2 "Could not determine the borg and borgmatic versions from $defaults_path"
+image_version="$(read_version 'backup_borg_image_version')"
+if [[ ! "$image_version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+	echo >&2 "Could not determine the borg/borgmatic image pair from $defaults_path: $image_version"
 	exit 1
 fi
+borg_version="${BASH_REMATCH[1]}"
+borgmatic_version="${BASH_REMATCH[2]}"
 
-# The version values do not carry a leading `v` (e.g. `1.4.5`), but the tags
-# do (`v1.4.5-2.1.7-0`). Stripping any `v` before prepending one keeps this
-# correct even if the version values ever start carrying one.
-tag_prefix="v${borg_version#v}-${borgmatic_version#v}-"
+# The published-image pair has no leading `v`; role release tags do.
+tag_prefix="v${borg_version}-${borgmatic_version}-"
 
 # Of all releases of this version pair, the highest release number. Sorted
 # numerically, so that -10 is recognized as newer than -9.
