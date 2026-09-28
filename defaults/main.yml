@@ -140,6 +140,8 @@ backup_borg_location_exclude_patterns: "{{ backup_borg_location_exclude_patterns
 backup_borg_location_exclude_patterns_auto: [] # _auto can be used to be automatically populated by playbooks
 backup_borg_location_exclude_patterns_custom: [] # _custom can be used to specify additional exclude patterns
 
+backup_borg_location_one_file_system: true
+
 backup_borg_location_remote_path: ""
 
 # Specify compression algorithm

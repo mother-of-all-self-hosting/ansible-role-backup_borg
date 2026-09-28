@@ -1,7 +1,7 @@
 #jinja2: lstrip_blocks: True, trim_blocks: True
 
 # location
-one_file_system: true
+one_file_system: {{ backup_borg_location_one_file_system | to_json }}
 source_directories: {{ backup_borg_location_source_directories|to_json }}
 repositories:
   {% for repo in backup_borg_location_repositories %}
