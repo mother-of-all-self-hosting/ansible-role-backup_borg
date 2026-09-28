@@ -170,6 +170,16 @@ Refer to [this page](https://torsion.org/borgmatic/reference/configuration/monit
 
 If you are looking for an Ansible role for ntfy, you can check out [ansible-role-ntfy](https://github.com/mother-of-all-self-hosting/ansible-role-ntfy) maintained by the [Mother-of-All-Self-Hosting (MASH)](https://github.com/mother-of-all-self-hosting) team.
 
+### Include mounted directories in the backup (optional)
+
+By default, this role passes [`one_file_system: true`](https://borgbackup.readthedocs.io/en/stable/usage/create.html) to Borg, which makes it stay within the same filesystem and not cross mount point boundaries. If your source directories span multiple filesystems (e.g. bind mounts), you may want to disable this.
+
+To do so, add the following configuration to your `vars.yml` file:
+
+```yaml
+backup_borg_location_one_file_system: false
+```
+
 ### Extending the configuration
 
 There are some additional things you may wish to configure about the service.
