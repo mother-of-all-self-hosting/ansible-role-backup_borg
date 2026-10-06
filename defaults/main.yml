@@ -26,7 +26,7 @@ backup_borg_alpine_version: edge
 # Renovate follows published Postgres-prefixed GHCR tags for this pair.
 # CI checks the tags for all supported Postgres versions before merge.
 # renovate: datasource=docker depName=ghcr.io/etkecc/borgmatic versioning=loose
-backup_borg_image_version: 1.4.5-2.1.9
+backup_borg_image_version: 1.4.5-2.1.10
 backup_borg_borg_version: "{{ backup_borg_image_version.split('-')[0] }}"
 backup_borg_borgmatic_version: "{{ backup_borg_image_version.split('-')[1] }}"
 
