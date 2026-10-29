@@ -22,6 +22,16 @@
     - { "old": "backup_borg_container_src_files_path", "new": "backup_borg_container_image_self_build_src_files_path" }
     - { "old": "backup_borg_container_image_force_pull", "new": "<removed> (the new community.docker.docker_image_pull module handles this natively)" }
 
+- name: Fail if Borgmatic repository URLs use the removed rest scheme
+  ansible.builtin.fail:
+    msg: >-
+      Borgmatic 2.1.10 no longer supports repository URLs using `rest://`.
+      Change the repository URL to `ssh://`.
+  when: >-
+    backup_borg_configuration.repositories | default([])
+    | map(attribute='path', default='')
+    | select('match', '^rest://') | list | length > 0
+
 - name: Fail if required BorgBackup settings not defined
   ansible.builtin.fail:
     msg: >-
