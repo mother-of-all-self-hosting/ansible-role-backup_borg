@@ -42,6 +42,20 @@
       ansible.builtin.set_fact:
         backup_borg_postgres_version: "{{ postgres_detected_version_string }}"
 
+# Owned by root: root runs the script in the bin path, and the container (running as root) reads the configuration.
+# Whoever owns the base path could rename the other paths (even root-owned ones) and put others in their place.
+- name: Ensure BorgBackup root-owned paths exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0750"
+    owner: root
+    group: "{{ backup_borg_gid }}"
+  with_items:
+    - "{{ backup_borg_base_path }}"
+    - "{{ backup_borg_bin_path }}"
+    - "{{ backup_borg_config_path }}"
+
 - name: Ensure BorgBackup docker data paths exist
   ansible.builtin.file:
     path: "{{ item }}"
@@ -50,8 +64,6 @@
     owner: "{{ backup_borg_uid }}"
     group: "{{ backup_borg_gid }}"
   with_items:
-    - "{{ backup_borg_bin_path }}"
-    - "{{ backup_borg_config_path }}"
     - "{{ backup_borg_restore_path }}"
 
 - name: Ensure BorgBackup build paths exist
@@ -67,7 +79,7 @@
     content: "{{ backup_borg_configuration | to_nice_yaml(indent=2, width=999999) }}"
     dest: "{{ backup_borg_config_path }}/config.yaml"
     mode: "0640"
-    owner: "{{ backup_borg_uid }}"
+    owner: root
     group: "{{ backup_borg_gid }}"
   register: backup_borg_borgmatic_config_file_result
 
@@ -76,7 +88,7 @@
     src: "{{ role_path }}/templates/bin/borgmatic.j2"
     dest: "{{ backup_borg_bin_path }}/borgmatic"
     mode: "0750"
-    owner: "{{ backup_borg_uid }}"
+    owner: root
     group: "{{ backup_borg_gid }}"
   register: backup_borg_borgmatic_script_result
 
@@ -85,7 +97,7 @@
     src: "{{ role_path }}/templates/passwd.j2"
     dest: "{{ backup_borg_config_path }}/passwd"
     mode: "0640"
-    owner: "{{ backup_borg_uid }}"
+    owner: root
     group: "{{ backup_borg_gid }}"
   register: backup_borg_passwd_result
 
@@ -94,7 +106,7 @@
     src: "{{ role_path }}/templates/sshkey.j2"
     dest: "{{ backup_borg_config_path }}/sshkey"
     mode: "0600"
-    owner: "{{ backup_borg_uid }}"
+    owner: root
     group: "{{ backup_borg_gid }}"
   register: backup_borg_sshkey_result
 
