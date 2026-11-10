@@ -24,6 +24,9 @@ on:  # yamllint disable-line rule:truthy
       - "REUSE.toml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   published-images:
     name: Check published Borg/borgmatic images
