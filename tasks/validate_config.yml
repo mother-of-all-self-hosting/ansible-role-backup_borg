@@ -42,7 +42,6 @@
     - { "name": "backup_borg_location_repositories", when: true }
     - { "name": "backup_borg_uid", when: true }
     - { "name": "backup_borg_gid", when: true }
-    - { "name": "backup_borg_container_network", when: true }
     - { "name": "backup_borg_postgresql_databases_hostname", when: "{{ backup_borg_postgresql_enabled }}" }
     - { "name": "backup_borg_mariadb_databases_hostname", when: "{{ backup_borg_mariadb_enabled }}" }
     - { "name": "backup_borg_mongodb_databases_hostname", when: "{{ backup_borg_mongodb_enabled }}" }
